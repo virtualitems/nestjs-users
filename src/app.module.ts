@@ -12,12 +12,7 @@ import { SqliteDriver } from '@mikro-orm/sqlite';
     UsersModule,
     SharedModule,
     DatabaseModule,
-    MikroOrmModule.forRoot({
-      entities: ['./dist/users/'],
-      entitiesTs: ['./src/users/'],
-      dbName: 'db.sqlite3',
-      driver: SqliteDriver,
-    })
+    MikroOrmModule.forRoot()
   ],
   controllers: [AppController],
 })
