@@ -1,6 +1,11 @@
 # Personal
 .ignore/
 
+# Sqlite
+*.db
+*.sqlite
+*.sqlite3
+
 # compiled output
 /dist
 /node_modules
