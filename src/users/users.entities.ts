@@ -16,6 +16,6 @@ export class User
     @Property()
     password!: string;
 
-    @Property({ defaultRaw: 'now()' })
+    @Property()
     createdAt: Date = new Date();
 }
