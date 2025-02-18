@@ -1,4 +1,5 @@
 import {
+    BadRequestException,
     Body,
     Controller,
     Delete,
@@ -19,6 +20,8 @@ import { AuthService } from './auth.service';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
+import { multerConfiguration } from 'src/multer.config';
+
 
 @Controller('users')
 export class AuthController
@@ -55,19 +58,33 @@ export class AuthController
     }
 
     @Post('upload')
+    @UseInterceptors(FileInterceptor('file', multerConfiguration))
     @HttpCode(201)
-    @UseInterceptors(FileInterceptor('file'))
-    uploadFile(@UploadedFile() file: Express.Multer.File)
-    {
-        console.log(file);
+    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+        if (!file) {
+            throw new BadRequestException('No file uploaded');
+        }
+
+        return {
+            message: 'File uploaded successfully',
+            filename: file.filename,
+            path: file.path
+        };
     }
 
     @Post('upload-multiple')
+    @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
     @HttpCode(201)
-    @UseInterceptors(FilesInterceptor('files'))
-    uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[])
-    {
-        console.log(files);
+    async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[]) {
+        if (!files || files.length === 0) {
+            throw new BadRequestException('No files uploaded');
+        }
+
+        return {
+            message: 'Files uploaded successfully',
+            count: files.length,
+            files: files
+        };
     }
 
     @Put(':id')
