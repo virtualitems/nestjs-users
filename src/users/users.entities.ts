@@ -4,10 +4,10 @@ import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 @Entity({ tableName: 'auth_groups' })
 export class Group
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
-    @Property()
+    @Property({ fieldName: 'name' })
     name!: string;
 }
 
@@ -15,10 +15,10 @@ export class Group
 @Entity({ tableName: 'auth_group_permissions' })
 export class GroupPermissions
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
-    @ManyToOne()
+    @ManyToOne(() => Group)
     group!: Group;
 
     @ManyToOne(() => Permission)
@@ -29,10 +29,10 @@ export class GroupPermissions
 @Entity({ tableName: 'auth_permissions' })
 export class Permission
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
-    @Property()
+    @Property({ fieldName: 'name' })
     name!: string;
 }
 
@@ -40,25 +40,25 @@ export class Permission
 @Entity({ tableName: 'auth_users' })
 export class User
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
-    @Property()
+    @Property({ fieldName: 'name' })
     name!: string;
 
-    @Property()
+    @Property({ fieldName: 'email' })
     email!: string;
 
-    @Property()
+    @Property({ fieldName: 'password' })
     password!: string;
 
-    @Property({ name: 'last_login' })
+    @Property({ fieldName: 'last_login' })
     lastLogin: Date = new Date();
 
-    @Property({ name: 'created_at' })
+    @Property({ fieldName: 'created_at' })
     createdAt: Date = new Date();
 
-    @Property({ name: 'deleted_at' })
+    @Property({ fieldName: 'deleted_at' })
     deletedAt: Date | null = null;
 }
 
@@ -66,7 +66,7 @@ export class User
 @Entity({ tableName: 'auth_user_groups' })
 export class UserGroups
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
     @ManyToOne(() => User)
@@ -80,7 +80,7 @@ export class UserGroups
 @Entity({ tableName: 'auth_user_permissions' })
 export class UserPermissions
 {
-    @PrimaryKey()
+    @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
     @ManyToOne(() => User)
@@ -94,12 +94,12 @@ export class UserPermissions
 @Entity({ tableName: 'auth_sessions' })
 export class Session
 {
-    @PrimaryKey({ name: 'session_key' })
+    @PrimaryKey({ fieldName: 'session_key' })
     sessionKey!: string;
 
-    @Property({ name: 'session_data' })
+    @Property({ fieldName: 'session_data' })
     sessionData!: string;
 
-    @Property({ name: 'expire_date' })
+    @Property({ fieldName: 'expire_date' })
     expireDate!: Date;
 }
