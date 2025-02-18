@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
@@ -14,31 +16,41 @@ export class AuthService
         @InjectRepository(User) private userRepo: EntityRepository<User>
     ) {}
 
-    async findAll(): Promise<User[]>
+    public async findAll(): Promise<User[]>
     {
         const users = await this.userRepo.findAll();
         return users;
     }
 
-    async findOne(id: number): Promise<User | null>
+    public async findOne(id: number): Promise<User | null>
     {
         const user = await this.userRepo.findOne(id);
         return user;
     }
 
-    async create(data: CreateUserDTO): Promise<void>
+    public async create(data: CreateUserDTO): Promise<void>
     {
         data.createdAt = new Date();
+        data.password = this.hashPassword(data.password);
         await this.userRepo.insert(data);
     }
 
-    async update(id: number, data: UpdateUserDTO): Promise<void>
+    public async update(id: number, data: UpdateUserDTO): Promise<void>
     {
+        if (data.password !== undefined) {
+            data.password = this.hashPassword(data.password);
+        }
+
         await this.userRepo.nativeUpdate({ id }, data);
     }
 
-    async delete(id: number): Promise<void>
+    public async delete(id: number): Promise<void>
     {
         await this.userRepo.nativeDelete(id);
+    }
+
+    protected hashPassword(password: string): string
+    {
+        return createHash('sha256').update(password).digest('hex');
     }
 }
