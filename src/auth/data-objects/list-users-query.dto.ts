@@ -1,14 +1,22 @@
-import { IsString, IsNumber } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsOptional, Min, IsInt, MinLength } from 'class-validator';
 
-
-export class ListUsersQuery
+export class ListUsersQueryDTO
 {
-    @IsNumber()
+    @Transform(({ value }) => parseInt(value))
+    @IsOptional()
+    @IsInt()
+    @Min(1)
     page?: number;
 
-    @IsNumber()
+    @Transform(({ value }) => parseInt(value))
+    @IsOptional()
+    @IsInt()
+    @Min(1)
     limit?: number;
 
+    @IsOptional()
     @IsString()
+    @MinLength(1)
     q?: string;
 }

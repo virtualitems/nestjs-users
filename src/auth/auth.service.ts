@@ -8,6 +8,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
+import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 
 
 @Injectable()
@@ -18,9 +19,27 @@ export class AuthService
         private jwtService: JwtService
     ) {}
 
-    public async findAll(): Promise<User[]>
+    public async findAll(query: ListUsersQueryDTO): Promise<Partial<User>[]>
     {
-        const users = await this.userRepo.findAll();
+        let { page = 1, limit = 10, q } = query;
+
+        if (q !== undefined) {
+            q = q.trim();
+        }
+
+        const offset = (page - 1) * limit;
+
+        const where: any = {};
+
+        if (q !== '') {
+            where.$or = [
+                { name: { $like: `%${q}%` } },
+                { email: { $like: `%${q}%` } }
+            ];
+        }
+
+        const users = await this.userRepo.findAll({ fields: ['id', 'name', 'email'], offset, limit, where });
+
         return users;
     }
 

@@ -9,6 +9,7 @@ import {
     Param,
     Post,
     Put,
+    Query,
     UnauthorizedException,
     UploadedFile,
     UploadedFiles,
@@ -25,6 +26,7 @@ import { User } from './entities/user.entity';
 import { multerConfiguration } from 'src/multer.config';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 
 
 @Controller('users')
@@ -35,9 +37,9 @@ export class AuthController
     @Get()
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
-    public async findAll(): Promise<User[]>
+    public async findAll(@Query() query: ListUsersQueryDTO): Promise<Partial<User>[]>
     {
-        const users = await this.authService.findAll();
+        const users = await this.authService.findAll(query);
         return users;
     }
 
