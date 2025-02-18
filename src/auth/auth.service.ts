@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 
+import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
@@ -47,6 +48,23 @@ export class AuthService
     public async delete(id: number): Promise<void>
     {
         await this.userRepo.nativeDelete(id);
+    }
+
+    public async authenticate(email: string, password: string): Promise<User | null>
+    {
+        const user = await this.userRepo.findOne({ email });
+
+        if (user === null) {
+            return null;
+        }
+
+        const isPasswordValid = user.password === this.hashPassword(password);
+
+        if (!isPasswordValid) {
+            return null;
+        }
+
+        return user;
     }
 
     protected hashPassword(password: string): string

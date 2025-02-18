@@ -9,6 +9,7 @@ import {
     Param,
     Post,
     Put,
+    UnauthorizedException,
     UploadedFile,
     UploadedFiles,
     UseInterceptors
@@ -21,6 +22,7 @@ import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
 import { multerConfiguration } from 'src/multer.config';
+import { AuthUserDTO } from './data-objects/auth-user.dto';
 
 
 @Controller('users')
@@ -99,6 +101,18 @@ export class AuthController
     public async delete(@Param('id') id: number): Promise<void>
     {
         await this.authService.delete(id);
+    }
+
+    @Post('login')
+    @HttpCode(200)
+    public async login(@Body() data: AuthUserDTO): Promise<void>
+    {
+        const user = await this.authService.authenticate(data.email, data.password);
+
+        if (user === null)
+        {
+            throw new UnauthorizedException('Invalid credentials');
+        }
     }
 
 }
