@@ -29,7 +29,7 @@ export class AuthService
     async create(data: CreateUserDTO): Promise<void>
     {
         data.createdAt = new Date();
-        this.userRepo.create(data);
+        await this.userRepo.insert(data);
     }
 
     async update(id: number, data: UpdateUserDTO): Promise<void>
