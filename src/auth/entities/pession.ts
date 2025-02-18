@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 
 @Entity({ tableName: 'auth_sessions' })
-export default class Session
+export class Session
 {
     @PrimaryKey({ fieldName: 'session_key' })
     sessionKey!: string;

@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 
 @Entity({ tableName: 'auth_users' })
-export default class User
+export class User
 {
     @PrimaryKey({ fieldName: 'id' })
     id!: number;
@@ -17,11 +17,11 @@ export default class User
     password!: string;
 
     @Property({ fieldName: 'last_login' })
-    lastLogin: Date = new Date();
+    lastLogin?: Date;
 
     @Property({ fieldName: 'created_at' })
-    createdAt: Date = new Date();
+    createdAt?: Date;
 
     @Property({ fieldName: 'deleted_at' })
-    deletedAt: Date | null = null;
+    deletedAt?: Date;
 }

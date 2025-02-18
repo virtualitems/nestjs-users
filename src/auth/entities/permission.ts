@@ -2,7 +2,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 
 @Entity({ tableName: 'auth_permissions' })
-export default class Permission
+export class Permission
 {
     @PrimaryKey({ fieldName: 'id' })
     id!: number;

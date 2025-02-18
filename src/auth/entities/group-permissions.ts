@@ -1,7 +1,7 @@
 import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 
-import Group from './group';
-import Permission from './permission';
+import { Group } from './group';
+import { Permission } from './permission';
 
 
 @Entity({ tableName: 'auth_group_permissions' })
