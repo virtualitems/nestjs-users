@@ -2,7 +2,10 @@ import { InjectRepository } from '@mikro-orm/nestjs';
 import { EntityRepository } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
-import User from './entities/user';
+import { User } from './entities/user';
+import { CreateUserDTO } from './data-objects/create-user.dto';
+import { UpdateUserDTO } from './data-objects/update-user.dto';
+
 
 @Injectable()
 export class AuthService
@@ -23,14 +26,15 @@ export class AuthService
         return user;
     }
 
-    async create(user: User): Promise<void>
+    async create(data: CreateUserDTO): Promise<void>
     {
-        this.userRepo.create(user);
+        data.createdAt = new Date();
+        this.userRepo.create(data);
     }
 
-    async update(id: number, user: User): Promise<void>
+    async update(id: number, data: UpdateUserDTO): Promise<void>
     {
-        await this.userRepo.nativeUpdate({ id }, user);
+        await this.userRepo.nativeUpdate({ id }, data);
     }
 
     async delete(id: number): Promise<void>

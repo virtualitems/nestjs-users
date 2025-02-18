@@ -1,6 +1,9 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nestjs/common';
+
 import { AuthService } from './auth.service';
-import User from './entities/user';
+import { CreateUserDTO } from './data-objects/create-user.dto';
+import { UpdateUserDTO } from './data-objects/update-user.dto';
+import { User } from './entities/user';
 
 
 @Controller('users')
@@ -19,13 +22,13 @@ export class AuthController {
 
     @Post()
     @HttpCode(201)
-    async create(@Body() user: User): Promise<void> {
-        await this.authService.create(user);
+    async create(@Body() data: CreateUserDTO): Promise<void> {
+        await this.authService.create(data);
     }
 
     @Put(':id')
-    async update(@Param('id') id: number, @Body() user: User): Promise<void> {
-        await this.authService.update(id, user);
+    async update(@Param('id') id: number, @Body() data: UpdateUserDTO): Promise<void> {
+        await this.authService.update(id, data);
     }
 
     @Delete(':id')
