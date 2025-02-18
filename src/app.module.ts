@@ -1,18 +1,18 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { UsersModule } from './users/users.module';
-import { SharedModule } from './shared/shared.module';
-import { DatabaseModule } from './database/database.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { SqliteDriver } from '@mikro-orm/sqlite';
+import { Module } from '@nestjs/common';
+
+import { AppController } from './app.controller';
+import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
+import { SharedModule } from './shared/shared.module';
 
 
 @Module({
   imports: [
-    UsersModule,
-    SharedModule,
+    AuthModule,
     DatabaseModule,
-    MikroOrmModule.forRoot()
+    MikroOrmModule.forRoot(),
+    SharedModule,
   ],
   controllers: [AppController],
 })
