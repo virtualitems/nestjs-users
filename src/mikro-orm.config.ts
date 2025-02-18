@@ -9,6 +9,8 @@ const config: Options = {
     path: './migrations'
   },
   driver: SqliteDriver,
+  charset: 'UTF-8',
+  collate: 'UTF-8',
 };
 
 export default config;
