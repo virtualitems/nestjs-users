@@ -1,8 +1,22 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 
 
-@Entity({ tableName: 'auth_groups' })
-export class Group
+@Entity({ tableName: 'auth_sessions' })
+export class Session
+{
+    @PrimaryKey({ fieldName: 'session_key' })
+    sessionKey!: string;
+
+    @Property({ fieldName: 'session_data' })
+    sessionData!: string;
+
+    @Property({ fieldName: 'expire_date' })
+    expireDate!: Date;
+}
+
+
+@Entity({ tableName: 'auth_permissions' })
+export class Permission
 {
     @PrimaryKey({ fieldName: 'id' })
     id!: number;
@@ -12,22 +26,8 @@ export class Group
 }
 
 
-@Entity({ tableName: 'auth_group_permissions' })
-export class GroupPermissions
-{
-    @PrimaryKey({ fieldName: 'id' })
-    id!: number;
-
-    @ManyToOne(() => Group)
-    group!: Group;
-
-    @ManyToOne(() => Permission)
-    permission!: Permission;
-}
-
-
-@Entity({ tableName: 'auth_permissions' })
-export class Permission
+@Entity({ tableName: 'auth_groups' })
+export class Group
 {
     @PrimaryKey({ fieldName: 'id' })
     id!: number;
@@ -63,6 +63,20 @@ export class User
 }
 
 
+@Entity({ tableName: 'auth_group_permissions' })
+export class GroupPermissions
+{
+    @PrimaryKey({ fieldName: 'id' })
+    id!: number;
+
+    @ManyToOne(() => Group)
+    group!: Group;
+
+    @ManyToOne(() => Permission)
+    permission!: Permission;
+}
+
+
 @Entity({ tableName: 'auth_user_groups' })
 export class UserGroups
 {
@@ -88,18 +102,4 @@ export class UserPermissions
 
     @ManyToOne(() => Permission)
     permission!: Permission;
-}
-
-
-@Entity({ tableName: 'auth_sessions' })
-export class Session
-{
-    @PrimaryKey({ fieldName: 'session_key' })
-    sessionKey!: string;
-
-    @Property({ fieldName: 'session_data' })
-    sessionData!: string;
-
-    @Property({ fieldName: 'expire_date' })
-    expireDate!: Date;
 }
