@@ -16,12 +16,12 @@ export class User
     @Property({ fieldName: 'password' })
     password!: string;
 
-    @Property({ fieldName: 'last_login' })
+    @Property({ fieldName: 'last_login', nullable: true })
     lastLogin?: Date;
 
-    @Property({ fieldName: 'created_at' })
+    @Property({ fieldName: 'created_at', nullable: true })
     createdAt?: Date;
 
-    @Property({ fieldName: 'deleted_at' })
+    @Property({ fieldName: 'deleted_at', nullable: true })
     deletedAt?: Date;
 }
