@@ -3,13 +3,13 @@ import { IsString, IsOptional, Min, IsInt, MinLength } from 'class-validator';
 
 export class ListUsersQueryDTO
 {
-    @Transform(({ value }) => parseInt(value))
+    @Transform(({ value }) => value ? parseInt(value) : undefined)
     @IsOptional()
     @IsInt()
     @Min(1)
     page?: number;
 
-    @Transform(({ value }) => parseInt(value))
+    @Transform(({ value }) => value ? parseInt(value) : undefined)
     @IsOptional()
     @IsInt()
     @Min(1)

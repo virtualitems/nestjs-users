@@ -1,4 +1,5 @@
-import { IsString, IsEmail, MinLength, IsDate } from 'class-validator';
+import { Transform } from 'class-transformer';
+import { IsString, IsEmail, MinLength, IsDate, IsOptional } from 'class-validator';
 
 
 export class CreateUserDTO
@@ -14,6 +15,8 @@ export class CreateUserDTO
     @MinLength(8)
     password!: string;
 
+    @Transform(({ value }) => value ? new Date(value) : undefined)
+    @IsOptional()
     @IsDate()
     createdAt?: Date;
 }
