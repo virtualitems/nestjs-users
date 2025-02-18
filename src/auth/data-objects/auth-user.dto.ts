@@ -1,7 +1,8 @@
 import { IsString, IsEmail, MinLength } from 'class-validator';
 
 
-export class AuthUserDTO {
+export class AuthUserDTO
+{
     @IsEmail()
     email!: string;
 
