@@ -30,7 +30,7 @@ export class AuthController
 
     @Get()
     @HttpCode(200)
-    async findAll(): Promise<User[]>
+    public async findAll(): Promise<User[]>
     {
         const users = await this.authService.findAll();
         return users;
@@ -38,7 +38,7 @@ export class AuthController
 
     @Get(':id')
     @HttpCode(200)
-    async findOne(@Param('id') id: number): Promise<User | null>
+    public async findOne(@Param('id') id: number): Promise<User | null>
     {
         const user = await this.authService.findOne(id);
 
@@ -52,7 +52,7 @@ export class AuthController
 
     @Post()
     @HttpCode(201)
-    async create(@Body() data: CreateUserDTO): Promise<void>
+    public async create(@Body() data: CreateUserDTO): Promise<void>
     {
         await this.authService.create(data);
     }
@@ -60,7 +60,7 @@ export class AuthController
     @Post('upload')
     @UseInterceptors(FileInterceptor('file', multerConfiguration))
     @HttpCode(201)
-    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    public async uploadFile(@UploadedFile() file: Express.Multer.File) {
         if (!file) {
             throw new BadRequestException('No file uploaded');
         }
@@ -75,7 +75,7 @@ export class AuthController
     @Post('upload-multiple')
     @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
     @HttpCode(201)
-    async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[]) {
+    public async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[]) {
         if (!files || files.length === 0) {
             throw new BadRequestException('No files uploaded');
         }
@@ -89,14 +89,14 @@ export class AuthController
 
     @Put(':id')
     @HttpCode(204)
-    async update(@Param('id') id: number, @Body() data: UpdateUserDTO): Promise<void>
+    public async update(@Param('id') id: number, @Body() data: UpdateUserDTO): Promise<void>
     {
         await this.authService.update(id, data);
     }
 
     @Delete(':id')
     @HttpCode(204)
-    async delete(@Param('id') id: number): Promise<void>
+    public async delete(@Param('id') id: number): Promise<void>
     {
         await this.authService.delete(id);
     }
