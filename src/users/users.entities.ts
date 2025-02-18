@@ -21,8 +21,11 @@ export class Permission
     @PrimaryKey({ fieldName: 'id' })
     id!: number;
 
-    @Property({ fieldName: 'name' })
-    name!: string;
+    @Property({ fieldName: 'codename' })
+    codename!: string;
+
+    @Property({ fieldName: 'description' })
+    description!: string;
 }
 
 
