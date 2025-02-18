@@ -1,11 +1,11 @@
 import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
 
-import { Group } from './group';
-import { User } from './user';
+import { Group } from './group.entity';
+import { User } from './user.entity';
 
 
 @Entity({ tableName: 'auth_user_groups' })
-export class UserGroups
+export class UserGroup
 {
     @PrimaryKey({ fieldName: 'id' })
     id!: number;
