@@ -3,7 +3,7 @@ import { Body, Controller, Delete, Get, HttpCode, Param, Post, Put } from '@nest
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
-import { User } from './entities/user';
+import { User } from './entities/user.entity';
 
 
 @Controller('users')
