@@ -14,7 +14,8 @@ import { UpdateUserDTO } from './data-objects/update-user.dto';
 export class AuthService
 {
     constructor(
-        @InjectRepository(User) private userRepo: EntityRepository<User>
+        @InjectRepository(User) private userRepo: EntityRepository<User>,
+        private jwtService: JwtService
     ) {}
 
     public async findAll(): Promise<User[]>
@@ -65,6 +66,12 @@ export class AuthService
         }
 
         return user;
+    }
+
+    public async generateJWT(user: User): Promise<string>
+    {
+        const payload = { sub: user.id, email: user.email };
+        return this.jwtService.signAsync(payload);
     }
 
     protected hashPassword(password: string): string

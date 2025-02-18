@@ -12,6 +12,7 @@ import {
     UnauthorizedException,
     UploadedFile,
     UploadedFiles,
+    UseGuards,
     UseInterceptors
 } from '@nestjs/common';
 
@@ -23,6 +24,7 @@ import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
 import { multerConfiguration } from 'src/multer.config';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 
 @Controller('users')
@@ -31,6 +33,7 @@ export class AuthController
     constructor(private readonly authService: AuthService) { }
 
     @Get()
+    @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     public async findAll(): Promise<User[]>
     {
@@ -39,13 +42,13 @@ export class AuthController
     }
 
     @Get(':id')
+    @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     public async findOne(@Param('id') id: number): Promise<User | null>
     {
         const user = await this.authService.findOne(id);
 
-        if (user === null)
-        {
+        if (user === null) {
             throw new NotFoundException('User not found');
         }
 
@@ -60,9 +63,11 @@ export class AuthController
     }
 
     @Post('upload')
+    @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FileInterceptor('file', multerConfiguration))
     @HttpCode(201)
-    public async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    public async uploadFile(@UploadedFile() file: Express.Multer.File)
+    {
         if (!file) {
             throw new BadRequestException('No file uploaded');
         }
@@ -75,9 +80,11 @@ export class AuthController
     }
 
     @Post('upload-multiple')
+    @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
     @HttpCode(201)
-    public async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[]) {
+    public async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[])
+    {
         if (!files || files.length === 0) {
             throw new BadRequestException('No files uploaded');
         }
@@ -90,6 +97,7 @@ export class AuthController
     }
 
     @Put(':id')
+    @UseGuards(AuthGuard('jwt'))
     @HttpCode(204)
     public async update(@Param('id') id: number, @Body() data: UpdateUserDTO): Promise<void>
     {
@@ -97,6 +105,7 @@ export class AuthController
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard('jwt'))
     @HttpCode(204)
     public async delete(@Param('id') id: number): Promise<void>
     {
@@ -105,14 +114,16 @@ export class AuthController
 
     @Post('login')
     @HttpCode(200)
-    public async login(@Body() data: AuthUserDTO): Promise<void>
+    public async login(@Body() data: AuthUserDTO): Promise<object>
     {
         const user = await this.authService.authenticate(data.email, data.password);
 
-        if (user === null)
-        {
+        if (user === null) {
             throw new UnauthorizedException('Invalid credentials');
         }
+
+        const access_token = await this.authService.generateJWT(user);
+        return { access_token };
     }
 
 }

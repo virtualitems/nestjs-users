@@ -8,10 +8,16 @@ import { UserPermission } from './entities/user-permission.entity';
 import { UserGroup } from './entities/user-group.entity';
 import { Group } from './entities/group.entity';
 import { User } from './entities/user.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from '../jwt/jwt.strategy';
 
 
 @Module({
   imports: [
+    JwtModule.register({
+      secret: 'secret',
+      signOptions: { expiresIn: '1h' }
+    }),
     MikroOrmModule.forFeature({
       entities: [
         User,
@@ -24,6 +30,6 @@ import { User } from './entities/user.entity';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService]
+  providers: [AuthService, JwtStrategy]
 })
 export class AuthModule { }
