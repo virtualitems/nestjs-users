@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository } from '@mikro-orm/sqlite';
+import { EntityRepository, FilterQuery } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
@@ -23,15 +23,11 @@ export class AuthService
     {
         let { page = 1, limit = 10, q } = query;
 
-        if (q !== undefined) {
-            q = q.trim();
-        }
-
         const offset = (page - 1) * limit;
 
-        const where: any = {};
+        const where: FilterQuery<User> = {};
 
-        if (q !== '') {
+        if (q !== undefined) {
             where.$or = [
                 { name: { $like: `%${q}%` } },
                 { email: { $like: `%${q}%` } }
