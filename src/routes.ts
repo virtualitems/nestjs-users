@@ -24,7 +24,7 @@ export const namespaces = Object.freeze({
     users: 'users',
 });
 
-export function routes(baseUrl: string)
+export function routes(baseUrl: string = '')
 {
     return Object.freeze({
         users: {

@@ -13,6 +13,6 @@ export class AppController
   @HttpCode(200)
   index(): RoutesDirectory
   {
-    return routes(this.configService.getOrThrow('BASE_URL'))
+    return routes(this.configService.getOrThrow('BASE_URL'));
   }
 }

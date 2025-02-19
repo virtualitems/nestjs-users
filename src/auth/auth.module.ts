@@ -10,13 +10,17 @@ import { Group } from './entities/group.entity';
 import { User } from './entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../jwt/jwt.strategy';
+import { ConfigService } from '@nestjs/config';
 
 
 @Module({
   imports: [
-    JwtModule.register({
-      secret: 'JWT_SECRET',
-      signOptions: { expiresIn: '1h' }
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.getOrThrow('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' }
+      }),
     }),
     MikroOrmModule.forFeature({
       entities: [

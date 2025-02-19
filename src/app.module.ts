@@ -17,9 +17,12 @@ import { config } from './mikro-orm.config';
     }),
     MikroOrmModule.forRoot(config),
     AuthModule,
-    JwtModule.register({
-      secret: 'JWT_SECRET',
-      signOptions: { expiresIn: '1h' }
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        secret: configService.getOrThrow('JWT_SECRET'),
+        signOptions: { expiresIn: '1h' }
+      }),
     }),
   ],
   controllers: [AppController],

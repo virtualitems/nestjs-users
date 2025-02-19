@@ -30,7 +30,7 @@ import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 import { namespaces, routes } from 'src/routes';
 
 
-const urls = routes('http://localhost:3000'); // BASE_URL
+const urls = routes();
 
 
 @Controller(namespaces.users)
