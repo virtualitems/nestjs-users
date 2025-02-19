@@ -41,16 +41,16 @@ export class AuthController
     @Get(urls.users.listAsJSON.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
-    public async findAll(@Query() query: ListUsersQueryDTO): Promise<Partial<User>[]>
+    public async findAll(@Query() query: ListUsersQueryDTO): Promise<HttpJsonResponse<Partial<User>[]>>
     {
         const users = await this.authService.findAll(query);
-        return users;
+        return {data: users};
     }
 
     @Get(urls.users.showAsJSON.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
-    public async findOne(@Param('id') id: number): Promise<User | null>
+    public async findOne(@Param('id') id: number): Promise<HttpJsonResponse<User>>
     {
         const user = await this.authService.findOne(id);
 
@@ -58,7 +58,7 @@ export class AuthController
             throw new NotFoundException('User not found');
         }
 
-        return user;
+        return {data: user};
     }
 
     @Post(urls.users.createWithJSON.path)
@@ -72,34 +72,26 @@ export class AuthController
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FileInterceptor('file', multerConfiguration))
     @HttpCode(201)
-    public async uploadFile(@UploadedFile() file: Express.Multer.File)
+    public async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<HttpJsonResponse>
     {
         if (!file) {
             throw new BadRequestException('No file uploaded');
         }
 
-        return {
-            message: 'File uploaded successfully',
-            filename: file.filename,
-            path: file.path
-        };
+        return {};
     }
 
     @Post(urls.users.attachmentsWithMultipart.path)
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
     @HttpCode(201)
-    public async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[])
+    public async uploadMultipleFiles(@UploadedFiles() files: Express.Multer.File[]): Promise<HttpJsonResponse>
     {
         if (!files || files.length === 0) {
             throw new BadRequestException('No files uploaded');
         }
 
-        return {
-            message: 'Files uploaded successfully',
-            count: files.length,
-            files: files
-        };
+        return {};
     }
 
     @Put(urls.users.updateWithJSON.path)
