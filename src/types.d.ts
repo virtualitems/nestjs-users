@@ -14,3 +14,10 @@ type RoutesNamespace = {
 type RoutesDirectory = {
     [key: string]: RoutesNamespace;
 };
+
+type HttpJsonResponse<T = unknown> = {
+    message?: string;
+    statusCode?: number;
+    data?: T;
+    error?: string | string[];
+};
