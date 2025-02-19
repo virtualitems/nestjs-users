@@ -3,89 +3,73 @@ type Route = {
     method: string;
 };
 
-type RouteTree = {
-    [key: string]: Route | RouteTree;
-};
 
-
-export function routes(): RouteTree
+export function routes(): { [key: string]: Route }
 {
     return {
         index: {
-            url: '/',
+            url: '',
             method: 'GET',
         },
-        users: {
-            list: {
-                json: {
-                    url: '/users',
-                    method: 'GET',
-                },
-                xls: {
-                    url: '/users/xls',
-                    method: 'GET',
-                },
-                xml: {
-                    url: '/users/xml',
-                    method: 'GET',
-                }
-            },
-            show: {
-                json: {
-                    url: '/users/:id',
-                    method: 'GET',
-                },
-                xml: {
-                    url: '/users/:id/xml',
-                    method: 'GET',
-                },
-                pdf: {
-                    url: '/users/:id/pdf',
-                    method: 'GET',
-                }
-            },
-            create: {
-                json: {
-                    url: '/users',
-                    method: 'POST',
-                },
-                xls: {
-                    url: '/users/xls',
-                    method: 'POST',
-                },
-                formset: {
-                    json: {
-                        url: '/users/formset',
-                        method: 'POST',
-                    }
-                }
-            },
-            update: {
-                json: {
-                    url: '/users/:id',
-                    method: 'PUT',
-                },
-            },
-            delete: {
-                json: {
-                    url: '/users/:id',
-                    method: 'DELETE',
-                },
-            },
-            attachments: {
-                json: {
-                    url: '/users/:id/attachments',
-                    method: 'POST',
-                },
-            },
+        // users list
+        usersListAsJSON: {
+            url: 'users',
+            method: 'GET',
         },
-        auth: {
-            login: {
-                json: {
-                    url: '/auth/login',
-                    method: 'POST',
-                },
-            },
+        usersListAsXLS: {
+            url: 'users/xls',
+            method: 'GET',
+        },
+        usersListAsXML: {
+            url: 'users/xml',
+            method: 'GET',
+        },
+        // users show
+        showUserAsJSON: {
+            url: 'users/:id',
+            method: 'GET',
+        },
+        showUserAsXML: {
+            url: 'users/:id/xml',
+            method: 'GET',
+        },
+        showUserAsPDF: {
+            url: 'users/:id/pdf',
+            method: 'GET',
+        },
+        // users create
+        createUserAsJSON: {
+            url: 'users',
+            method: 'POST',
+        },
+        createUserAsXLS: {
+            url: 'users/xls',
+            method: 'POST',
+        },
+        // users update
+        updateUserAsJSON: {
+            url: 'users/:id',
+            method: 'PUT',
+        },
+        // users delete
+        deleteUserAsJSON: {
+            url: 'users/:id',
+            method: 'DELETE',
+        },
+        // users crud
+        formsetUserAsJSON: {
+            url: 'users/formset',
+            method: 'POST',
+        },
+        // users files
+        uploadUserAttachmentsAsFormData: {
+            url: 'users/:id/attachments',
+            method: 'POST',
+        },
+        // auth login
+        authLoginAsJSON: {
+            url: 'auth/login',
+            method: 'POST',
         },
     };
-} //:: ƒ routes(): RouteTree
+}
