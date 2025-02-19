@@ -1,7 +1,7 @@
 type Generic<T = unknown> = Record<string, T>;
 
 type Route = {
-    url: string;
+    path: string;
     method: string;
     contentType?: string;
     accept?: string;

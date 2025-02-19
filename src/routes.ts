@@ -20,160 +20,119 @@ export const formats = Object.freeze({
     ZIP: 'application/zip',
 });
 
-export const namespaces: { [key: string]: string; } = Object.freeze({
+export const namespaces = Object.freeze({
     users: 'users',
 });
 
 
-class RoutesDirectoryBuilder
-{
-    protected _baseurl: URL;
-    protected _routes: RoutesDirectory;
+const baseUrl = 'http://localhost:3000';
 
-    public constructor(baseurl: URL)
-    {
-        this._baseurl = baseurl;
-        this._routes = {};
+
+export const routes = Object.freeze({
+    users: {
+        listAsJSON: {
+            namespace: namespaces.users,
+            path: '/',
+            url: baseUrl + '/' + namespaces.users + '/',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.JSON,
+        },
+        listAsXLSX: {
+            namespace: namespaces.users,
+            path: '/xls',
+            url: baseUrl + '/' + namespaces.users + '/xls',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.XLSX,
+        },
+        listAsXML: {
+            namespace: namespaces.users,
+            path: '/xml',
+            url: baseUrl + '/' + namespaces.users + '/xml',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.XML,
+        },
+        showAsJSON: {
+            namespace: namespaces.users,
+            path: '/:id',
+            url: baseUrl + '/' + namespaces.users + '/:id',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.JSON,
+        },
+        showAsXML: {
+            namespace: namespaces.users,
+            path: '/:id/xml',
+            url: baseUrl + '/' + namespaces.users + '/:id/xml',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.XML,
+        },
+        showAsPDF: {
+            namespace: namespaces.users,
+            path: '/:id/pdf',
+            url: baseUrl + '/' + namespaces.users + '/:id/pdf',
+            method: methods.GET,
+            contentType: undefined,
+            accept: formats.PDF,
+        },
+        createWithJSON: {
+            namespace: namespaces.users,
+            path: '/',
+            url: baseUrl + '/' + namespaces.users + '/',
+            method: methods.POST,
+            contentType: formats.JSON,
+            accept: undefined,
+        },
+        createWithXLSX: {
+            namespace: namespaces.users,
+            path: '/xls',
+            url: baseUrl + '/' + namespaces.users + '/xls',
+            method: methods.POST,
+            contentType: formats.XLSX,
+            accept: undefined,
+        },
+        updateWithJSON: {
+            namespace: namespaces.users,
+            path: '/:id',
+            url: baseUrl + '/' + namespaces.users + '/:id',
+            method: methods.PUT,
+            contentType: formats.JSON,
+            accept: undefined,
+        },
+        delete: {
+            namespace: namespaces.users,
+            path: '/:id',
+            url: baseUrl + '/' + namespaces.users + '/:id',
+            method: methods.DELETE,
+            contentType: undefined,
+            accept: undefined,
+        },
+        formsetWithJSON: {
+            namespace: namespaces.users,
+            path: '/formset',
+            url: baseUrl + '/' + namespaces.users + '/formset',
+            method: methods.POST,
+            contentType: formats.JSON,
+            accept: undefined,
+        },
+        attachmentsWithMultipart: {
+            namespace: namespaces.users,
+            path: '/:id/attachments',
+            url: baseUrl + '/' + namespaces.users + '/:id/attachments',
+            method: methods.POST,
+            contentType: formats.MULTIPART,
+            accept: undefined,
+        },
+        loginWithJSON: {
+            namespace: namespaces.users,
+            path: '/login',
+            url: baseUrl + '/' + namespaces.users + '/login',
+            method: methods.POST,
+            contentType: formats.JSON,
+            accept: undefined,
+        },
     }
-
-    public set(data: {
-        namespace: string,
-        key: string,
-        path: string,
-        method: string,
-        contentType?: string,
-        accept?: string;
-    })
-    {
-        const url = this._baseurl + namespaces[data.namespace] + data.path;
-
-        if (!(data.namespace in this._routes)) {
-            this._routes[data.namespace] = {};
-        }
-
-        this._routes[data.namespace][data.key] = {
-            url,
-            method: data.method,
-            contentType: data.contentType,
-            accept: data.accept,
-        };
-
-        return this;
-    }
-
-    public build()
-    {
-        return Object.freeze(this._routes);
-    }
-}
-
-
-const builder = new RoutesDirectoryBuilder(new URL('http://localhost:3000/')); // BASE_URL
-
-
-export const routes: RoutesDirectory = builder
-    .set({
-        namespace: namespaces.users,
-        key: 'listAsJSON',
-        path: '/',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.JSON,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'listAsXLSX',
-        path: '/xls',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.XLSX,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'listAsXML',
-        path: '/xml',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.XML,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'showAsJSON',
-        path: '/:id',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.JSON,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'showAsXML',
-        path: '/:id/xml',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.XML,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'showAsPDF',
-        path: '/:id/pdf',
-        method: methods.GET,
-        contentType: undefined,
-        accept: formats.PDF,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'createWithJSON',
-        path: '/',
-        method: methods.POST,
-        contentType: formats.JSON,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'createWithXLSX',
-        path: '/xls',
-        method: methods.POST,
-        contentType: formats.XLSX,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'updateWithJSON',
-        path: '/:id',
-        method: methods.PUT,
-        contentType: formats.JSON,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'delete',
-        path: '/:id',
-        method: methods.DELETE,
-        contentType: undefined,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'formsetWithJSON',
-        path: '/formset',
-        method: methods.POST,
-        contentType: formats.JSON,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'attachmentsWithMultipart',
-        path: '/:id/attachments',
-        method: methods.POST,
-        contentType: formats.MULTIPART,
-        accept: undefined,
-    })
-    .set({
-        namespace: namespaces.users,
-        key: 'loginWithJSON',
-        path: '/login',
-        method: methods.POST,
-        contentType: formats.JSON,
-        accept: undefined,
-    })
-    .build();
+});

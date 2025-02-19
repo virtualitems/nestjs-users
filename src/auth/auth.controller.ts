@@ -27,14 +27,15 @@ import { multerConfiguration } from 'src/multer.config';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
+import { namespaces, routes } from 'src/routes';
 
 
-@Controller('users')
+@Controller(namespaces.users)
 export class AuthController
 {
     constructor(private readonly authService: AuthService) { }
 
-    @Get()
+    @Get(routes.users.listAsJSON.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     public async findAll(@Query() query: ListUsersQueryDTO): Promise<Partial<User>[]>
@@ -43,7 +44,7 @@ export class AuthController
         return users;
     }
 
-    @Get(':id')
+    @Get(routes.users.showAsJSON.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(200)
     public async findOne(@Param('id') id: number): Promise<User | null>
@@ -57,14 +58,14 @@ export class AuthController
         return user;
     }
 
-    @Post()
+    @Post(routes.users.createWithJSON.path)
     @HttpCode(201)
     public async create(@Body() data: CreateUserDTO): Promise<void>
     {
         await this.authService.create(data);
     }
 
-    @Post('upload')
+    @Post(routes.users.createWithXLSX.path)
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FileInterceptor('file', multerConfiguration))
     @HttpCode(201)
@@ -81,7 +82,7 @@ export class AuthController
         };
     }
 
-    @Post('upload-multiple')
+    @Post(routes.users.attachmentsWithMultipart.path)
     @UseGuards(AuthGuard('jwt'))
     @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
     @HttpCode(201)
@@ -98,7 +99,7 @@ export class AuthController
         };
     }
 
-    @Put(':id')
+    @Put(routes.users.updateWithJSON.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(204)
     public async update(@Param('id') id: number, @Body() data: UpdateUserDTO): Promise<void>
@@ -106,7 +107,7 @@ export class AuthController
         await this.authService.update(id, data);
     }
 
-    @Delete(':id')
+    @Delete(routes.users.delete.path)
     @UseGuards(AuthGuard('jwt'))
     @HttpCode(204)
     public async delete(@Param('id') id: number): Promise<void>
@@ -114,7 +115,7 @@ export class AuthController
         await this.authService.delete(id);
     }
 
-    @Post('login')
+    @Post(routes.users.loginWithJSON.path)
     @HttpCode(200)
     public async login(@Body() data: AuthUserDTO): Promise<object>
     {
@@ -125,7 +126,7 @@ export class AuthController
         }
 
         const access_token = await this.authService.generateJWT(user);
-        return { access_token };
+        return { authorization: `Bearer ${access_token}` };
     }
 
 }
