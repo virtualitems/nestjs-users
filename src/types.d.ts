@@ -3,8 +3,8 @@ type Generic<T = unknown> = Record<string, T>;
 type Route = {
     url: string;
     method: string;
-    expects: string | null;
-    returns: string | null;
+    contentType?: string;
+    accept?: string;
 };
 
 type RoutesNamespace = {

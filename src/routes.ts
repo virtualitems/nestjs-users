@@ -41,8 +41,8 @@ class RoutesDirectoryBuilder
         key: string,
         path: string,
         method: string,
-        expects: string | null,
-        returns: string | null;
+        contentType?: string,
+        accept?: string;
     })
     {
         const url = this._baseurl + namespaces[data.namespace] + data.path;
@@ -54,8 +54,8 @@ class RoutesDirectoryBuilder
         this._routes[data.namespace][data.key] = {
             url,
             method: data.method,
-            expects: data.expects,
-            returns: data.returns,
+            contentType: data.contentType,
+            accept: data.accept,
         };
 
         return this;
@@ -71,109 +71,109 @@ class RoutesDirectoryBuilder
 const builder = new RoutesDirectoryBuilder(new URL('http://localhost:3000/')); // BASE_URL
 
 
-export const routes = builder
+export const routes: RoutesDirectory = builder
     .set({
         namespace: namespaces.users,
         key: 'listAsJSON',
         path: '/',
         method: methods.GET,
-        expects: null,
-        returns: formats.JSON,
+        contentType: undefined,
+        accept: formats.JSON,
     })
     .set({
         namespace: namespaces.users,
         key: 'listAsXLSX',
         path: '/xls',
         method: methods.GET,
-        expects: null,
-        returns: formats.XLSX,
+        contentType: undefined,
+        accept: formats.XLSX,
     })
     .set({
         namespace: namespaces.users,
         key: 'listAsXML',
         path: '/xml',
         method: methods.GET,
-        expects: null,
-        returns: formats.XML,
+        contentType: undefined,
+        accept: formats.XML,
     })
     .set({
         namespace: namespaces.users,
         key: 'showAsJSON',
         path: '/:id',
         method: methods.GET,
-        expects: null,
-        returns: formats.JSON,
+        contentType: undefined,
+        accept: formats.JSON,
     })
     .set({
         namespace: namespaces.users,
         key: 'showAsXML',
         path: '/:id/xml',
         method: methods.GET,
-        expects: null,
-        returns: formats.XML,
+        contentType: undefined,
+        accept: formats.XML,
     })
     .set({
         namespace: namespaces.users,
         key: 'showAsPDF',
         path: '/:id/pdf',
         method: methods.GET,
-        expects: null,
-        returns: formats.PDF,
+        contentType: undefined,
+        accept: formats.PDF,
     })
     .set({
         namespace: namespaces.users,
         key: 'createWithJSON',
         path: '/',
         method: methods.POST,
-        expects: formats.JSON,
-        returns: null,
+        contentType: formats.JSON,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'createWithXLSX',
         path: '/xls',
         method: methods.POST,
-        expects: formats.XLSX,
-        returns: null,
+        contentType: formats.XLSX,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'updateWithJSON',
         path: '/:id',
         method: methods.PUT,
-        expects: formats.JSON,
-        returns: null,
+        contentType: formats.JSON,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'delete',
         path: '/:id',
         method: methods.DELETE,
-        expects: null,
-        returns: null,
+        contentType: undefined,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'formsetWithJSON',
         path: '/formset',
         method: methods.POST,
-        expects: formats.JSON,
-        returns: null,
+        contentType: formats.JSON,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'attachmentsWithMultipart',
         path: '/:id/attachments',
         method: methods.POST,
-        expects: formats.MULTIPART,
-        returns: null,
+        contentType: formats.MULTIPART,
+        accept: undefined,
     })
     .set({
         namespace: namespaces.users,
         key: 'loginWithJSON',
         path: '/login',
         method: methods.POST,
-        expects: formats.JSON,
-        returns: null,
+        contentType: formats.JSON,
+        accept: undefined,
     })
     .build();
