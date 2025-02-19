@@ -15,7 +15,7 @@ import { JwtStrategy } from '../jwt/jwt.strategy';
 @Module({
   imports: [
     JwtModule.register({
-      secret: 'secret',
+      secret: 'JWT_SECRET',
       signOptions: { expiresIn: '1h' }
     }),
     MikroOrmModule.forFeature({
