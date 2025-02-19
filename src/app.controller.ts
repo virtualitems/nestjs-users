@@ -1,11 +1,16 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, HttpCode, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+
+import { routes } from './routes';
 
 @Controller()
-export class AppController {
-  constructor() {}
-
+export class AppController
+{
   @Get()
-  getHello(): string {
-    return 'Hello World';
+  @UseGuards(AuthGuard('jwt'))
+  @HttpCode(200)
+  index(): RoutesDirectory
+  {
+    return routes;
   }
 }
