@@ -11,6 +11,6 @@ export class AppController
   @HttpCode(200)
   index(): RoutesDirectory
   {
-    return routes;
+    return routes('http://localhost:3000'); // BASE_URL
   }
 }
