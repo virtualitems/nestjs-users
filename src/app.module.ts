@@ -12,7 +12,7 @@ import { routes } from './routes';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load: [routes],
+      load: [() => routes],
     }),
     MikroOrmModule.forRoot(config),
     AuthModule,

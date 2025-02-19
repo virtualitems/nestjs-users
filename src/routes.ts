@@ -1,75 +1,122 @@
 type Route = {
     url: string;
     method: string;
+    receives: string | null;
+    returns: string | null;
+};
+
+type Directory = {
+    [key: string]: {
+        [key: string]: Route;
+    };
 };
 
 
-export function routes(): { [key: string]: Route }
-{
-    return {
-        index: {
-            url: '',
-            method: 'GET',
+export const methods = Object.freeze({
+    GET: 'GET',
+    POST: 'POST',
+    PUT: 'PUT',
+    DELETE: 'DELETE',
+    PATCH: 'PATCH',
+    OPTIONS: 'OPTIONS',
+    HEAD: 'HEAD',
+});
+
+export const formats = Object.freeze({
+    CSV: 'text/csv',
+    FORM: 'application/x-www-form-urlencoded',
+    JSON: 'application/json',
+    MULTIPART: 'multipart/form-data',
+    PDF: 'application/pdf',
+    XLS: 'application/vnd.ms-excel',
+    XLSX: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    XML: 'application/xml',
+    ZIP: 'application/zip',
+});
+
+export const namespaces = Object.freeze({
+    users: 'users',
+});
+
+export const routes: Directory = Object.freeze({
+    [namespaces.users]: {
+        listAsJSON: {
+            url: '/',
+            method: methods.GET,
+            receives: null,
+            returns: formats.JSON,
         },
-        // users list
-        usersListAsJSON: {
-            url: 'users',
-            method: 'GET',
+        listAsXLSX: {
+            url: '/xls',
+            method: methods.GET,
+            receives: null,
+            returns: formats.XLSX,
         },
-        usersListAsXLS: {
-            url: 'users/xls',
-            method: 'GET',
+        listAsXML: {
+            url: '/xml',
+            method: methods.GET,
+            receives: null,
+            returns: formats.XML,
         },
-        usersListAsXML: {
-            url: 'users/xml',
-            method: 'GET',
+        showAsJSON: {
+            url: '/:id',
+            method: methods.GET,
+            receives: null,
+            returns: formats.JSON,
         },
-        // users show
-        showUserAsJSON: {
-            url: 'users/:id',
-            method: 'GET',
+        showAsXML: {
+            url: '/:id/xml',
+            method: methods.GET,
+            receives: null,
+            returns: formats.XML,
         },
-        showUserAsXML: {
-            url: 'users/:id/xml',
-            method: 'GET',
+        showAsPDF: {
+            url: '/:id/pdf',
+            method: methods.GET,
+            receives: null,
+            returns: formats.PDF,
         },
-        showUserAsPDF: {
-            url: 'users/:id/pdf',
-            method: 'GET',
+        createWithJSON: {
+            url: '/',
+            method: methods.POST,
+            receives: formats.JSON,
+            returns: null,
         },
-        // users create
-        createUserAsJSON: {
-            url: 'users',
-            method: 'POST',
+        createWithXLSX: {
+            url: '/xls',
+            method: methods.POST,
+            receives: formats.XLSX,
+            returns: null,
         },
-        createUserAsXLS: {
-            url: 'users/xls',
-            method: 'POST',
+        updateWithJSON: {
+            url: '/:id',
+            method: methods.PUT,
+            receives: formats.JSON,
+            returns: null,
         },
-        // users update
-        updateUserAsJSON: {
-            url: 'users/:id',
-            method: 'PUT',
+        delete: {
+            url: '/:id',
+            method: methods.DELETE,
+            receives: null,
+            returns: null,
         },
-        // users delete
-        deleteUserAsJSON: {
-            url: 'users/:id',
-            method: 'DELETE',
+        formsetWithJSON: {
+            url: '/formset',
+            method: methods.POST,
+            receives: formats.JSON,
+            returns: null,
         },
-        // users crud
-        formsetUserAsJSON: {
-            url: 'users/formset',
-            method: 'POST',
+        attachmentsWithMultipart: {
+            url: '/:id/attachments',
+            method: methods.POST,
+            receives: formats.MULTIPART,
+            returns: null,
         },
-        // users files
-        uploadUserAttachmentsAsFormData: {
-            url: 'users/:id/attachments',
-            method: 'POST',
+        loginWithJSON: {
+            url: '/login',
+            method: methods.POST,
+            receives: formats.JSON,
+            returns: null,
         },
-        // auth login
-        authLoginAsJSON: {
-            url: 'auth/login',
-            method: 'POST',
-        },
-    };
-}
+    },
+});
