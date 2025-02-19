@@ -1,7 +1,7 @@
 import { Options } from '@mikro-orm/core';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 
-const config: Options = {
+export const config: Options = {
   entities: ['./dist/**/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts'],
   dbName: 'db.sqlite3',
@@ -12,5 +12,3 @@ const config: Options = {
   charset: 'UTF-8',
   collate: 'UTF-8',
 };
-
-export default config;
