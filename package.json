@@ -28,6 +28,7 @@
     "@mikro-orm/nestjs": "^6.1.1",
     "@mikro-orm/sqlite": "^6.4.6",
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/passport": "^11.0.5",
