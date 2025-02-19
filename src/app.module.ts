@@ -1,13 +1,13 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { config } from './mikro-orm.config';
-import { routes } from './routes';
+
 
 @Module({
   imports: [
@@ -23,6 +23,6 @@ import { routes } from './routes';
     }),
   ],
   controllers: [AppController],
-  providers: [JwtStrategy],
+  providers: [JwtStrategy, ConfigService],
 })
 export class AppModule {}
