@@ -25,14 +25,11 @@ export class AuthService {
     const where: FilterQuery<User> = {};
 
     if (q !== undefined) {
-      where.$or = [
-        { name: { $like: `%${q}%` } },
-        { email: { $like: `%${q}%` } },
-      ];
+      where.$or = [{ email: { $like: `%${q}%` } }];
     }
 
     const users = await this.userRepo.findAll({
-      fields: ['id', 'name', 'email'],
+      fields: ['id', 'email'],
       offset,
       limit,
       where,
