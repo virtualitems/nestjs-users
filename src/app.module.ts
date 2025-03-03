@@ -6,7 +6,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './jwt/jwt.strategy';
-import { config } from './mikro-orm.config';
+import mikroOrmConfig from './mikro-orm.config';
 
 @Module({
   imports: [
@@ -14,7 +14,7 @@ import { config } from './mikro-orm.config';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MikroOrmModule.forRoot(config),
+    MikroOrmModule.forRoot(mikroOrmConfig),
     AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],

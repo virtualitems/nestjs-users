@@ -1,7 +1,6 @@
-import { Options } from '@mikro-orm/core';
 import { SqliteDriver } from '@mikro-orm/sqlite';
 
-export const config: Options = {
+export default {
   entities: ['./dist/**/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts'],
   dbName: 'db.sqlite3',
