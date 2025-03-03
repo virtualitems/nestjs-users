@@ -6,7 +6,7 @@ export const config: Options = {
   entitiesTs: ['./src/**/*.entity.ts'],
   dbName: 'db.sqlite3',
   migrations: {
-    path: './migrations'
+    path: './migrations',
   },
   driver: SqliteDriver,
   charset: 'UTF-8',
