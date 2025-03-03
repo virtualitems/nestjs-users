@@ -11,23 +11,23 @@ import {
   Put,
   Query,
   UnauthorizedException,
-  UploadedFile,
-  UploadedFiles,
+  // UploadedFile,
+  // UploadedFiles,
   UseGuards,
-  UseInterceptors,
+  // UseInterceptors,
 } from '@nestjs/common';
 
-import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+// import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 
 import { AuthService } from './auth.service';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
-import { multerConfiguration } from 'src/multer.config';
+// import { multerConfiguration } from 'src/multer.config';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
-import { namespaces, routes } from 'src/routes';
+import { namespaces, routes } from '../routes';
 
 const urls = routes();
 
@@ -51,7 +51,7 @@ export class AuthController {
   public async findOne(
     @Param('id') id: number,
   ): Promise<HttpJsonResponse<User>> {
-    const user = await this.authService.findOne(id);
+    const user = await this.authService.findOne({ id });
 
     if (user === null) {
       throw new NotFoundException('User not found');
@@ -63,36 +63,42 @@ export class AuthController {
   @Post(urls.users.createWithJSON.path)
   @HttpCode(201)
   public async create(@Body() data: CreateUserDTO): Promise<void> {
+    const user = await this.authService.findOne({ email: data.email });
+
+    if (user !== null) {
+      throw new BadRequestException('User already exists');
+    }
+
     await this.authService.create(data);
   }
 
-  @Post(urls.users.createWithXLSX.path)
-  @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(FileInterceptor('file', multerConfiguration))
-  @HttpCode(201)
-  public uploadFile(
-    @UploadedFile() file: Express.Multer.File,
-  ): HttpJsonResponse {
-    if (!file) {
-      throw new BadRequestException('No file uploaded');
-    }
+  // @Post(urls.users.createWithXLSX.path)
+  // @UseGuards(AuthGuard('jwt'))
+  // @UseInterceptors(FileInterceptor('file', multerConfiguration))
+  // @HttpCode(201)
+  // public uploadFile(
+  //   @UploadedFile() file: Express.Multer.File,
+  // ): HttpJsonResponse {
+  //   if (!file) {
+  //     throw new BadRequestException('No file uploaded');
+  //   }
 
-    return {};
-  }
+  //   return {};
+  // }
 
-  @Post(urls.users.attachmentsWithMultipart.path)
-  @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
-  @HttpCode(201)
-  public uploadMultipleFiles(
-    @UploadedFiles() files: Express.Multer.File[],
-  ): HttpJsonResponse {
-    if (!files || files.length === 0) {
-      throw new BadRequestException('No files uploaded');
-    }
+  // @Post(urls.users.attachmentsWithMultipart.path)
+  // @UseGuards(AuthGuard('jwt'))
+  // @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
+  // @HttpCode(201)
+  // public uploadMultipleFiles(
+  //   @UploadedFiles() files: Express.Multer.File[],
+  // ): HttpJsonResponse {
+  //   if (!files || files.length === 0) {
+  //     throw new BadRequestException('No files uploaded');
+  //   }
 
-    return {};
-  }
+  //   return {};
+  // }
 
   @Put(urls.users.updateWithJSON.path)
   @UseGuards(AuthGuard('jwt'))
@@ -121,6 +127,7 @@ export class AuthController {
     }
 
     const access_token = await this.authService.generateJWT(user);
-    return { authorization: `Bearer ${access_token}` };
+    const authorization = `Bearer ${access_token}`;
+    return { authorization };
   }
 }
