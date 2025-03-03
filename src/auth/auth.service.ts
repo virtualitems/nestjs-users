@@ -38,8 +38,8 @@ export class AuthService {
     return users;
   }
 
-  public async findOne(id: number): Promise<User | null> {
-    const user = await this.userRepo.findOne(id);
+  public async findOne(filters: Partial<User>): Promise<User | null> {
+    const user = await this.userRepo.findOne(filters);
     return user;
   }
 
