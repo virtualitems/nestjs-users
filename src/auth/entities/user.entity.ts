@@ -5,9 +5,6 @@ export class User {
   @PrimaryKey({ fieldName: 'id' })
   id!: number;
 
-  @Property({ fieldName: 'name' })
-  name!: string;
-
   @Property({ fieldName: 'email' })
   email!: string;
 
