@@ -12,14 +12,13 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../jwt/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
 
-
 @Module({
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' }
+        signOptions: { expiresIn: '1h' },
       }),
     }),
     MikroOrmModule.forFeature({
@@ -29,11 +28,11 @@ import { ConfigService } from '@nestjs/config';
         Permission,
         UserGroup,
         UserPermission,
-        GroupPermission
-      ]
-    })
+        GroupPermission,
+      ],
+    }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy]
+  providers: [AuthService, JwtStrategy],
 })
-export class AuthModule { }
+export class AuthModule {}

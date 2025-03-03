@@ -10,87 +10,85 @@ import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 
-
 @Injectable()
-export class AuthService
-{
-    constructor(
-        @InjectRepository(User) private userRepo: EntityRepository<User>,
-        private jwtService: JwtService
-    ) {}
+export class AuthService {
+  constructor(
+    @InjectRepository(User) private userRepo: EntityRepository<User>,
+    private jwtService: JwtService,
+  ) {}
 
-    public async findAll(query: ListUsersQueryDTO): Promise<Partial<User>[]>
-    {
-        let { page = 1, limit = 10, q } = query;
+  public async findAll(query: ListUsersQueryDTO): Promise<Partial<User>[]> {
+    const { page = 1, limit = 10, q } = query;
 
-        const offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
 
-        const where: FilterQuery<User> = {};
+    const where: FilterQuery<User> = {};
 
-        if (q !== undefined) {
-            where.$or = [
-                { name: { $like: `%${q}%` } },
-                { email: { $like: `%${q}%` } }
-            ];
-        }
-
-        const users = await this.userRepo.findAll({ fields: ['id', 'name', 'email'], offset, limit, where });
-
-        return users;
+    if (q !== undefined) {
+      where.$or = [
+        { name: { $like: `%${q}%` } },
+        { email: { $like: `%${q}%` } },
+      ];
     }
 
-    public async findOne(id: number): Promise<User | null>
-    {
-        const user = await this.userRepo.findOne(id);
-        return user;
+    const users = await this.userRepo.findAll({
+      fields: ['id', 'name', 'email'],
+      offset,
+      limit,
+      where,
+    });
+
+    return users;
+  }
+
+  public async findOne(id: number): Promise<User | null> {
+    const user = await this.userRepo.findOne(id);
+    return user;
+  }
+
+  public async create(data: CreateUserDTO): Promise<void> {
+    data.createdAt = new Date();
+    data.password = this.hashPassword(data.password);
+    await this.userRepo.insert(data);
+  }
+
+  public async update(id: number, data: UpdateUserDTO): Promise<void> {
+    if (data.password !== undefined) {
+      data.password = this.hashPassword(data.password);
     }
 
-    public async create(data: CreateUserDTO): Promise<void>
-    {
-        data.createdAt = new Date();
-        data.password = this.hashPassword(data.password);
-        await this.userRepo.insert(data);
+    await this.userRepo.nativeUpdate({ id }, data);
+  }
+
+  public async delete(id: number): Promise<void> {
+    await this.userRepo.nativeDelete(id);
+  }
+
+  public async authenticate(
+    email: string,
+    password: string,
+  ): Promise<User | null> {
+    const user = await this.userRepo.findOne({ email });
+
+    if (user === null) {
+      return null;
     }
 
-    public async update(id: number, data: UpdateUserDTO): Promise<void>
-    {
-        if (data.password !== undefined) {
-            data.password = this.hashPassword(data.password);
-        }
+    const isPasswordValid = user.password === this.hashPassword(password);
 
-        await this.userRepo.nativeUpdate({ id }, data);
+    if (!isPasswordValid) {
+      return null;
     }
 
-    public async delete(id: number): Promise<void>
-    {
-        await this.userRepo.nativeDelete(id);
-    }
+    return user;
+  }
 
-    public async authenticate(email: string, password: string): Promise<User | null>
-    {
-        const user = await this.userRepo.findOne({ email });
+  public async generateJWT(user: User): Promise<string> {
+    const payload = { sub: user.id, email: user.email };
+    return this.jwtService.signAsync(payload);
+  }
 
-        if (user === null) {
-            return null;
-        }
-
-        const isPasswordValid = user.password === this.hashPassword(password);
-
-        if (!isPasswordValid) {
-            return null;
-        }
-
-        return user;
-    }
-
-    public async generateJWT(user: User): Promise<string>
-    {
-        const payload = { sub: user.id, email: user.email };
-        return this.jwtService.signAsync(payload);
-    }
-
-    protected hashPassword(password: string): string
-    {
-        return createHash('sha256').update(password).digest('hex');
-    }
+  protected hashPassword(password: string): string {
+    return createHash('sha256').update(password).digest('hex');
+  }
 }

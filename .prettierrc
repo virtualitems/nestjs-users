@@ -1,4 +1,7 @@
 {
   "singleQuote": true,
-  "trailingComma": "all"
+  "trailingComma": "all",
+  "editor.formatOnSave": true,
+  "endOfLine": "auto",
+  "bracketSpacing": true
 }

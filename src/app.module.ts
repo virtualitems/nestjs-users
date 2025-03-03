@@ -8,7 +8,6 @@ import { AuthModule } from './auth/auth.module';
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { config } from './mikro-orm.config';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -19,9 +18,9 @@ import { config } from './mikro-orm.config';
     AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' }
+        signOptions: { expiresIn: '1h' },
       }),
     }),
   ],
