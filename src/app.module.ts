@@ -20,7 +20,7 @@ import mikroOrmConfig from './mikro-orm.config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: configService.getOrThrow('JWT_EXPIRES_IN') },
       }),
     }),
   ],
