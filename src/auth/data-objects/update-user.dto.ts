@@ -9,11 +9,6 @@ import {
 
 export class UpdateUserDTO {
   @IsOptional()
-  @IsString()
-  @MinLength(2)
-  name?: string;
-
-  @IsOptional()
   @IsEmail()
   email?: string;
 
