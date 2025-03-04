@@ -2,7 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 
-async function bootstrap() {
+const port = process.env.PORT;
+
+if (port === undefined) {
+  throw new Error('Port is not defined');
+}
+
+async function bootstrap(port: number): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
@@ -18,7 +24,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(port);
 }
 
-void bootstrap();
+void bootstrap(Number(port));
