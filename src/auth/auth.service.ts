@@ -38,15 +38,18 @@ export class AuthService {
     return users;
   }
 
-  public async findOne(filters: Partial<User>): Promise<User | null> {
-    const user = await this.userRepo.findOne(filters);
+  public async findOne(filters: Partial<User>): Promise<Partial<User> | null> {
+    const user = await this.userRepo.findOne(filters, {
+      fields: ['id', 'email'],
+    });
     return user;
   }
 
-  public async create(data: CreateUserDTO): Promise<void> {
+  public async create(data: CreateUserDTO): Promise<{ id: number }> {
     data.createdAt = new Date();
     data.password = this.hashPassword(data.password);
-    await this.userRepo.insert(data);
+    const id = await this.userRepo.insert(data);
+    return { id };
   }
 
   public async update(id: number, data: UpdateUserDTO): Promise<void> {
