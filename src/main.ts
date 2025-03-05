@@ -1,14 +1,15 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
+import * as fs from 'fs';
 
-const port = process.env.PORT;
+const socketPath = process.argv[2];
 
-if (port === undefined) {
-  throw new Error('Port is not defined');
+if (socketPath === undefined) {
+  throw new Error('Socket path is not defined');
 }
 
-async function bootstrap(port: number): Promise<void> {
+async function bootstrap(socketPath: string): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
@@ -24,7 +25,12 @@ async function bootstrap(port: number): Promise<void> {
     }),
   );
 
-  await app.listen(port);
+  if (fs.existsSync(socketPath)) {
+    fs.unlinkSync(socketPath);
+  }
+
+  await app.listen(socketPath);
+  console.log(`Application is listening on socket ${socketPath}`);
 }
 
-void bootstrap(Number(port));
+void bootstrap(socketPath);
