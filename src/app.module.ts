@@ -10,12 +10,12 @@ import mikroOrmConfig from './mikro-orm.config';
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
     }),
     MikroOrmModule.forRoot(mikroOrmConfig),
-    AuthModule,
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
