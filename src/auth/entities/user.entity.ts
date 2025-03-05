@@ -3,7 +3,7 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 @Entity({ tableName: 'auth_users' })
 export class User {
   @PrimaryKey({ fieldName: 'id' })
-  id!: number;
+  id?: number;
 
   @Property({ fieldName: 'email', unique: true })
   email!: string;
