@@ -76,7 +76,10 @@ export class AuthController {
       throw new BadRequestException('No avatar uploaded');
     }
 
-    const existent = await this.authService.find({ email: data.email });
+    const existent = await this.authService.find({
+      email: data.email,
+      deletedAt: null,
+    });
 
     if (existent !== null) {
       fs.unlinkSync(avatar.path);
@@ -105,7 +108,7 @@ export class AuthController {
     @Body() data: UpdateUserDTO,
     @UploadedFile() avatar: Express.Multer.File,
   ): Promise<void> {
-    const user = await this.authService.find({ id });
+    const user = await this.authService.find({ id, deletedAt: null });
 
     if (user === null) {
       throw new NotFoundException('User not found');
@@ -137,15 +140,23 @@ export class AuthController {
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(204)
   public async delete(@Param('id') id: number): Promise<void> {
-    await this.authService.delete(id);
+    const user = await this.authService.find({ id, deletedAt: null });
+
+    if (user === null) {
+      throw new NotFoundException('User not found');
+    }
+
+    await this.authService.delete(this.em, user);
   }
 
   @Post(urls.users.loginWithJSON.path)
   @HttpCode(200)
   public async login(@Body() data: AuthUserDTO): Promise<object> {
-    const user = await this.authService.authenticate(data.email, data.password);
+    let user: User;
 
-    if (user === null) {
+    try {
+      user = await this.authService.authenticate(data.email, data.password);
+    } catch {
       throw new UnauthorizedException('Invalid credentials');
     }
 

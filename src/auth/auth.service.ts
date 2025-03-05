@@ -24,7 +24,7 @@ export class AuthService {
 
     const offset = (page - 1) * limit;
 
-    const where: FilterQuery<User> = {};
+    const where: FilterQuery<User> = { deletedAt: null };
 
     if (q !== undefined) {
       where.$or = [{ email: { $like: `%${q}%` } }];
@@ -67,25 +67,19 @@ export class AuthService {
     await em.persist(user).flush();
   }
 
-  public async delete(id: number): Promise<void> {
-    await this.repo.nativeDelete(id);
+  public async delete(em: EntityManager, user: User): Promise<void> {
+    user.deletedAt = new Date();
+    await em.persist(user).flush();
   }
 
-  public async authenticate(
-    email: string,
-    password: string,
-  ): Promise<User | null> {
-    const user = await this.repo.findOne({ email });
+  public async authenticate(email: string, password: string): Promise<User> {
+    const hash = this.hashPassword(password);
 
-    if (user === null) {
-      return null;
-    }
-
-    const isPasswordValid = user.password === this.hashPassword(password);
-
-    if (!isPasswordValid) {
-      return null;
-    }
+    const user = await this.repo.findOneOrFail({
+      email,
+      password: hash,
+      deletedAt: null,
+    });
 
     return user;
   }
