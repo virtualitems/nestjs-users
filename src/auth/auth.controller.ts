@@ -149,8 +149,13 @@ export class AuthController {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    user.lastLogin = new Date();
+
+    await this.authService.update(this.em, user);
+
     const access_token = await this.authService.generateJWT(user);
     const authorization = `Bearer ${access_token}`;
+
     return { authorization };
   }
 }
