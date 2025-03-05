@@ -29,7 +29,7 @@ import { CreateUserDTO } from './data-objects/create-user.dto';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
-import { PersonsService } from 'src/persons/persons.service';
+import { EntityManager } from '@mikro-orm/sqlite';
 
 const urls = routes();
 
@@ -37,7 +37,7 @@ const urls = routes();
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly personsService: PersonsService,
+    private readonly em: EntityManager,
   ) {}
 
   @Get(urls.users.listAsJSON.path)
@@ -85,15 +85,15 @@ export class AuthController {
 
     const person: Person = { name: data.name, avatar: avatar.path };
 
-    await this.personsService.create(person);
-
     const user: User = {
       email: data.email,
       password: data.password,
       person: person,
     };
 
-    await this.authService.create(user);
+    await this.em.transactional(async (em) => {
+      await this.authService.create(em, user);
+    });
   }
 
   // @Post(urls.users.createWithXLSX.path)

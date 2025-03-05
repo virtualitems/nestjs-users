@@ -13,7 +13,6 @@ import { Permission } from './entities/permission.entity';
 import { UserGroup } from './entities/user-group.entity';
 import { UserPermission } from './entities/user-permission.entity';
 import { User } from './entities/user.entity';
-import { PersonsService } from '../persons/persons.service';
 import { Person } from 'src/persons/entities/person.entity';
 
 @Module({
@@ -41,6 +40,6 @@ import { Person } from 'src/persons/entities/person.entity';
     PersonsModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, PersonsService],
+  providers: [AuthService, JwtStrategy],
 })
 export class AuthModule {}

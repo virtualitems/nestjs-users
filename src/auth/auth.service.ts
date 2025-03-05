@@ -17,7 +17,6 @@ import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly repo: EntityRepository<User>,
-    private readonly em: EntityManager,
     private readonly jwtService: JwtService,
   ) {}
 
@@ -49,14 +48,14 @@ export class AuthService {
     return user;
   }
 
-  public async create(data: User): Promise<void> {
+  public async create(em: EntityManager, data: User): Promise<void> {
     const entity = this.repo.create({
       ...data,
       password: data.password && this.hashPassword(data.password),
       createdAt: new Date(),
     });
 
-    await this.em.persist(entity).flush();
+    await em.persist(entity).flush();
   }
 
   public async update(id: number, data: UpdateUserDTO): Promise<void> {
