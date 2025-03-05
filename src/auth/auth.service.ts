@@ -10,7 +10,6 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
-import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 
 @Injectable()
@@ -20,7 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async findAll(query: ListUsersQueryDTO): Promise<Partial<User>[]> {
+  public async listAll(query: ListUsersQueryDTO): Promise<Partial<User>[]> {
     const { page = 1, limit = 10, q } = query;
 
     const offset = (page - 1) * limit;
@@ -32,18 +31,24 @@ export class AuthService {
     }
 
     const users = await this.repo.findAll({
-      fields: ['id', 'email'],
+      fields: ['id', 'email', 'person.name', 'person.avatar'],
       offset,
       limit,
       where,
+      populate: ['person'],
     });
 
     return users;
   }
 
-  public async findOne(filters: Partial<User>): Promise<Partial<User> | null> {
+  public async find(filters: Partial<User>): Promise<User | null> {
+    return await this.repo.findOne(filters);
+  }
+
+  public async show(filters: Partial<User>): Promise<Partial<User> | null> {
     const user = await this.repo.findOne(filters, {
-      fields: ['id', 'email'],
+      fields: ['id', 'email', 'person.name', 'person.avatar'],
+      populate: ['person'],
     });
     return user;
   }
@@ -58,12 +63,8 @@ export class AuthService {
     await em.persist(entity).flush();
   }
 
-  public async update(id: number, data: UpdateUserDTO): Promise<void> {
-    if (data.password !== undefined) {
-      data.password = this.hashPassword(data.password);
-    }
-
-    await this.repo.nativeUpdate({ id }, data);
+  public async update(em: EntityManager, user: User): Promise<void> {
+    await em.persist(user).flush();
   }
 
   public async delete(id: number): Promise<void> {
@@ -94,7 +95,7 @@ export class AuthService {
     return this.jwtService.signAsync(payload);
   }
 
-  protected hashPassword(password: string): string {
+  public hashPassword(password: string): string {
     return createHash('sha256').update(password).digest('hex');
   }
 }

@@ -43,20 +43,20 @@ export class AuthController {
   @Get(urls.users.listAsJSON.path)
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  public async findAll(
+  public async list(
     @Query() query: ListUsersQueryDTO,
   ): Promise<HttpJsonResponse<Partial<User>[]>> {
-    const users = await this.authService.findAll(query);
+    const users = await this.authService.listAll(query);
     return { data: users };
   }
 
   @Get(urls.users.showAsJSON.path)
   @UseGuards(AuthGuard('jwt'))
   @HttpCode(200)
-  public async findOne(
+  public async show(
     @Param('id') id: number,
   ): Promise<HttpJsonResponse<Partial<User>>> {
-    const user = await this.authService.findOne({ id });
+    const user = await this.authService.show({ id });
 
     if (user === null) {
       throw new NotFoundException('User not found');
@@ -76,7 +76,7 @@ export class AuthController {
       throw new BadRequestException('No avatar uploaded');
     }
 
-    const existent = await this.authService.findOne({ email: data.email });
+    const existent = await this.authService.find({ email: data.email });
 
     if (existent !== null) {
       fs.unlinkSync(avatar.path);
@@ -96,42 +96,41 @@ export class AuthController {
     });
   }
 
-  // @Post(urls.users.createWithXLSX.path)
-  // @UseGuards(AuthGuard('jwt'))
-  // @UseInterceptors(FileInterceptor('file', multerConfiguration))
-  // @HttpCode(201)
-  // public uploadFile(
-  //   @UploadedFile() file: Express.Multer.File,
-  // ): HttpJsonResponse {
-  //   if (!file) {
-  //     throw new BadRequestException('No file uploaded');
-  //   }
-
-  //   return {};
-  // }
-
-  // @Post(urls.users.attachmentsWithMultipart.path)
-  // @UseGuards(AuthGuard('jwt'))
-  // @UseInterceptors(FilesInterceptor('files', 10, multerConfiguration))
-  // @HttpCode(201)
-  // public uploadMultipleFiles(
-  //   @UploadedFiles() files: Express.Multer.File[],
-  // ): HttpJsonResponse {
-  //   if (!files || files.length === 0) {
-  //     throw new BadRequestException('No files uploaded');
-  //   }
-
-  //   return {};
-  // }
-
   @Put(urls.users.updateWithJSON.path)
   @UseGuards(AuthGuard('jwt'))
+  @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
   @HttpCode(204)
   public async update(
     @Param('id') id: number,
     @Body() data: UpdateUserDTO,
+    @UploadedFile() avatar: Express.Multer.File,
   ): Promise<void> {
-    await this.authService.update(id, data);
+    const user = await this.authService.find({ id });
+
+    if (user === null) {
+      throw new NotFoundException('User not found');
+    }
+
+    if (data.email) {
+      user.email = data.email;
+    }
+
+    if (data.password) {
+      user.password = this.authService.hashPassword(data.password);
+    }
+
+    if (user.person) {
+      if (data.name) {
+        user.person.name = data.name;
+      }
+      if (avatar !== undefined) {
+        user.person.avatar = avatar.path;
+      }
+    }
+
+    await this.em.transactional(async (em) => {
+      await this.authService.update(em, user);
+    });
   }
 
   @Delete(urls.users.delete.path)
