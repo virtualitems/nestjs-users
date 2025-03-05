@@ -4,9 +4,7 @@
 mindmap
     root((System))
         persons
-            users
-                guests
-                authenticated
-            contacts
-        files
+        users
+            guests
+            authenticated
 ```
