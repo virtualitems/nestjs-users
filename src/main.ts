@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
 
-const socketPath = process.argv[2];
+const socketPath = process.env.UNIX_DOMAIN_SOCKET;
 
 if (socketPath === undefined) {
   throw new Error('Socket path is not defined');
@@ -30,7 +30,6 @@ async function bootstrap(socketPath: string): Promise<void> {
   }
 
   await app.listen(socketPath);
-  console.log(`Application is listening on socket ${socketPath}`);
 }
 
 void bootstrap(socketPath);
