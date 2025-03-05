@@ -8,4 +8,8 @@ export class CreateUserDTO {
   @IsString()
   @MinLength(8)
   password!: string;
+
+  @IsString()
+  @MinLength(2)
+  name!: string;
 }
