@@ -1,6 +1,7 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { Person } from './entities/person.entity';
+import { PersonsService } from './persons.service';
 
 @Module({
   imports: [
@@ -9,6 +10,6 @@ import { Person } from './entities/person.entity';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [PersonsService],
 })
 export class PersonsModule {}
