@@ -1,4 +1,5 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import { Entity, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Person } from '../../persons/entities/person.entity';
 
 @Entity({ tableName: 'auth_users' })
 export class User {
@@ -10,6 +11,9 @@ export class User {
 
   @Property({ fieldName: 'password' })
   password!: string;
+
+  @OneToOne(() => Person)
+  person!: Person;
 
   @Property({ fieldName: 'last_login', nullable: true })
   lastLogin?: Date;
