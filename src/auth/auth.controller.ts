@@ -50,7 +50,7 @@ export class AuthController {
   @HttpCode(200)
   public async findOne(
     @Param('id') id: number,
-  ): Promise<HttpJsonResponse<User>> {
+  ): Promise<HttpJsonResponse<Partial<User>>> {
     const user = await this.authService.findOne({ id });
 
     if (user === null) {
@@ -62,14 +62,16 @@ export class AuthController {
 
   @Post(urls.users.createWithJSON.path)
   @HttpCode(201)
-  public async create(@Body() data: CreateUserDTO): Promise<void> {
+  public async create(@Body() data: CreateUserDTO): Promise<{ id: number }> {
     const user = await this.authService.findOne({ email: data.email });
 
     if (user !== null) {
       throw new BadRequestException('User already exists');
     }
 
-    await this.authService.create(data);
+    const result = await this.authService.create(data);
+
+    return result;
   }
 
   // @Post(urls.users.createWithXLSX.path)
