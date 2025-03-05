@@ -16,11 +16,11 @@ export class User {
   person!: Person;
 
   @Property({ fieldName: 'last_login', nullable: true })
-  lastLogin?: Date;
+  lastLogin?: Date | null;
 
   @Property({ fieldName: 'created_at', nullable: true })
-  createdAt?: Date;
+  createdAt?: Date | null;
 
   @Property({ fieldName: 'deleted_at', nullable: true })
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 }
