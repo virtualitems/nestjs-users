@@ -2,19 +2,23 @@ import { createHash } from 'node:crypto';
 
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { EntityRepository, FilterQuery } from '@mikro-orm/sqlite';
+import {
+  EntityManager,
+  EntityRepository,
+  FilterQuery,
+} from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
-import { CreateUserDTO } from './data-objects/create-user.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private userRepo: EntityRepository<User>,
-    private jwtService: JwtService,
+    @InjectRepository(User) private readonly repo: EntityRepository<User>,
+    private readonly em: EntityManager,
+    private readonly jwtService: JwtService,
   ) {}
 
   public async findAll(query: ListUsersQueryDTO): Promise<Partial<User>[]> {
@@ -28,7 +32,7 @@ export class AuthService {
       where.$or = [{ email: { $like: `%${q}%` } }];
     }
 
-    const users = await this.userRepo.findAll({
+    const users = await this.repo.findAll({
       fields: ['id', 'email'],
       offset,
       limit,
@@ -39,17 +43,20 @@ export class AuthService {
   }
 
   public async findOne(filters: Partial<User>): Promise<Partial<User> | null> {
-    const user = await this.userRepo.findOne(filters, {
+    const user = await this.repo.findOne(filters, {
       fields: ['id', 'email'],
     });
     return user;
   }
 
-  public async create(data: CreateUserDTO): Promise<{ id: number }> {
-    data.createdAt = new Date();
-    data.password = this.hashPassword(data.password);
-    const id = await this.userRepo.insert(data);
-    return { id };
+  public async create(data: User): Promise<void> {
+    const entity = this.repo.create({
+      ...data,
+      password: data.password && this.hashPassword(data.password),
+      createdAt: new Date(),
+    });
+
+    await this.em.persist(entity).flush();
   }
 
   public async update(id: number, data: UpdateUserDTO): Promise<void> {
@@ -57,18 +64,18 @@ export class AuthService {
       data.password = this.hashPassword(data.password);
     }
 
-    await this.userRepo.nativeUpdate({ id }, data);
+    await this.repo.nativeUpdate({ id }, data);
   }
 
   public async delete(id: number): Promise<void> {
-    await this.userRepo.nativeDelete(id);
+    await this.repo.nativeDelete(id);
   }
 
   public async authenticate(
     email: string,
     password: string,
   ): Promise<User | null> {
-    const user = await this.userRepo.findOne({ email });
+    const user = await this.repo.findOne({ email });
 
     if (user === null) {
       return null;

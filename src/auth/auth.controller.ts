@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+
 import {
   BadRequestException,
   Body,
@@ -11,29 +13,32 @@ import {
   Put,
   Query,
   UnauthorizedException,
-  // UploadedFile,
-  // UploadedFiles,
+  UploadedFile,
   UseGuards,
-  // UseInterceptors,
+  UseInterceptors,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { FileInterceptor } from '@nestjs/platform-express';
 
-// import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-
+import { Person } from '../persons/entities/person.entity';
+import { namespaces, routes } from '../routes';
+import { multerConfiguration } from '../multer.config';
 import { AuthService } from './auth.service';
+import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
+import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
-// import { multerConfiguration } from 'src/multer.config';
-import { AuthUserDTO } from './data-objects/auth-user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
-import { namespaces, routes } from '../routes';
+import { PersonsService } from 'src/persons/persons.service';
 
 const urls = routes();
 
 @Controller(namespaces.users)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly personsService: PersonsService,
+  ) {}
 
   @Get(urls.users.listAsJSON.path)
   @UseGuards(AuthGuard('jwt'))
@@ -62,16 +67,33 @@ export class AuthController {
 
   @Post(urls.users.createWithJSON.path)
   @HttpCode(201)
-  public async create(@Body() data: CreateUserDTO): Promise<{ id: number }> {
-    const user = await this.authService.findOne({ email: data.email });
+  @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
+  public async create(
+    @Body() data: CreateUserDTO,
+    @UploadedFile() avatar: Express.Multer.File,
+  ): Promise<void> {
+    if (avatar === undefined) {
+      throw new BadRequestException('No avatar uploaded');
+    }
 
-    if (user !== null) {
+    const existent = await this.authService.findOne({ email: data.email });
+
+    if (existent !== null) {
+      fs.unlinkSync(avatar.path);
       throw new BadRequestException('User already exists');
     }
 
-    const result = await this.authService.create(data);
+    const person: Person = { name: data.name, avatar: avatar.path };
 
-    return result;
+    await this.personsService.create(person);
+
+    const user: User = {
+      email: data.email,
+      password: data.password,
+      person: person,
+    };
+
+    await this.authService.create(user);
   }
 
   // @Post(urls.users.createWithXLSX.path)
