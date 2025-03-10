@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { JwtStrategy } from './jwt/jwt.strategy';
 import { PersonsModule } from '../persons/persons.module';
-import { AuthService } from './auth.service';
+import { AuthService } from './users/users.service';
 import { GroupPermission } from './permissions/entities/group-permission.entity';
 import { Group } from './permissions/entities/group.entity';
 import { Permission } from './permissions/entities/permission.entity';
