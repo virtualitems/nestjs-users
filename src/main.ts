@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import * as fs from 'fs';
 
-const socketPath = process.env.UNIX_DOMAIN_SOCKET;
+const socketPath = process.env.LISTEN_TO;
 
 if (socketPath === undefined) {
   throw new Error('Socket path is not defined');
