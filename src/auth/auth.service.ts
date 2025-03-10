@@ -9,8 +9,8 @@ import {
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
-import { User } from './entities/user.entity';
-import { ListUsersDTO } from './data-objects/list-users.dto';
+import { User } from './users/entities/user.entity';
+import { ListUsersDTO } from './users/data-objects/list-users.dto';
 
 @Injectable()
 export class AuthService {

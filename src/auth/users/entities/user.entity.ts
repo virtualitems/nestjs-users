@@ -1,5 +1,5 @@
 import { Entity, OneToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Person } from '../../persons/entities/person.entity';
+import { Person } from '../../../persons/entities/person.entity';
 
 @Entity({ tableName: 'auth_users' })
 export class User {

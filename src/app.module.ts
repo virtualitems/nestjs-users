@@ -5,7 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { JwtStrategy } from './jwt/jwt.strategy';
+import { JwtStrategy } from './auth/jwt/jwt.strategy';
 import mikroOrmConfig from './mikro-orm.config';
 
 @Module({

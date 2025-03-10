@@ -20,10 +20,10 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
-import { Person } from '../persons/entities/person.entity';
-import { namespaces, routes } from '../routes';
-import { multerConfiguration } from '../multer.config';
-import { AuthService } from './auth.service';
+import { Person } from '../../persons/entities/person.entity';
+import { namespaces, routes } from '../../routes';
+import { multerConfiguration } from '../../multer.config';
+import { AuthService } from '.././auth.service';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { ListUsersDTO } from './data-objects/list-users.dto';
@@ -34,7 +34,7 @@ import { EntityManager } from '@mikro-orm/sqlite';
 const urls = routes();
 
 @Controller(namespaces.users)
-export class AuthController {
+export class UsersController {
   constructor(
     private readonly authService: AuthService,
     private readonly em: EntityManager,
