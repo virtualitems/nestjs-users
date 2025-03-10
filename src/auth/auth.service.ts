@@ -10,7 +10,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
-import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
+import { ListUsersQueryDTO } from './data-objects/list-users.dto';
 
 @Injectable()
 export class AuthService {

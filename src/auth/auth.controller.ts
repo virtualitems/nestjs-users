@@ -26,7 +26,7 @@ import { multerConfiguration } from '../multer.config';
 import { AuthService } from './auth.service';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
-import { ListUsersQueryDTO } from './data-objects/list-users-query.dto';
+import { ListUsersQueryDTO } from './data-objects/list-users.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
 import { EntityManager } from '@mikro-orm/sqlite';
