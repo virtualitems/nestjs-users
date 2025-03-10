@@ -5,6 +5,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -16,7 +17,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 
 import { namespaces, routes } from '../../routes';
-import { AuthService } from '.././auth.service';
+import { AuthService } from './users.service';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { ListUsersDTO } from './data-objects/list-users.dto';
@@ -35,7 +36,7 @@ export class UsersController {
 
   @Get(urls.users.listAsJSON.path)
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: ListUsersDTO,
   ): Promise<HttpJsonResponse<Partial<User>[]>> {
@@ -45,7 +46,7 @@ export class UsersController {
 
   @Get(urls.users.showAsJSON.path)
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id') id: number,
   ): Promise<HttpJsonResponse<Partial<User>>> {
@@ -59,7 +60,7 @@ export class UsersController {
   }
 
   @Post(urls.users.createWithJSON.path)
-  @HttpCode(201)
+  @HttpCode(HttpStatus.CREATED)
   public async create(@Body() data: CreateUserDTO): Promise<void> {
     const existent = await this.authService.find({
       email: data.email,
@@ -80,7 +81,7 @@ export class UsersController {
 
   @Put(urls.users.updateWithJSON.path)
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id') id: number,
     @Body() data: UpdateUserDTO,
@@ -104,7 +105,7 @@ export class UsersController {
 
   @Delete(urls.users.delete.path)
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(@Param('id') id: number): Promise<void> {
     const user = await this.authService.find({ id, deletedAt: null });
 
@@ -116,7 +117,7 @@ export class UsersController {
   }
 
   @Post(urls.users.loginWithJSON.path)
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   public async login(@Body() data: AuthUserDTO): Promise<object> {
     let user: User;
 
