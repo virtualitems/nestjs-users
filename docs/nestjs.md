@@ -3,12 +3,18 @@
 ```mermaid
 mindmap
     root((app))
+        auth
+            userGroups
+                config
+                jwt
+                mikro
+            users
+                config
+                jwt
+                mikro
         config
         jwt
         mikro
-        auth
-            config
-            jwt
-            mikro
-            persons
+        persons
+            users
 ```
