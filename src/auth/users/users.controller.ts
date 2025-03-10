@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/sqlite';
 import {
   BadRequestException,
   Body,
@@ -14,16 +15,15 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
 import { namespaces, routes } from '../../routes';
-import { AuthService } from './users.service';
+import { JwtAuthGuard } from '../jwt/jwt.guard';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { ListUsersDTO } from './data-objects/list-users.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
-import { EntityManager } from '@mikro-orm/sqlite';
+import { AuthService } from './users.service';
 
 const urls = routes();
 
@@ -35,7 +35,7 @@ export class UsersController {
   ) {}
 
   @Get(urls.users.listAsJSON.path)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: ListUsersDTO,
@@ -45,7 +45,7 @@ export class UsersController {
   }
 
   @Get(urls.users.showAsJSON.path)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id') id: number,
@@ -80,7 +80,7 @@ export class UsersController {
   }
 
   @Put(urls.users.updateWithJSON.path)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id') id: number,
@@ -104,7 +104,7 @@ export class UsersController {
   }
 
   @Delete(urls.users.delete.path)
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(@Param('id') id: number): Promise<void> {
     const user = await this.authService.find({ id, deletedAt: null });
@@ -131,8 +131,8 @@ export class UsersController {
 
     await this.authService.update(this.em, user);
 
-    const access_token = await this.authService.generateJWT(user);
-    const authorization = `Bearer ${access_token}`;
+    const accessToken = await this.authService.generateJWT(user);
+    const authorization = `Bearer ${accessToken}`;
 
     return { authorization };
   }

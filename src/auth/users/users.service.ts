@@ -11,6 +11,7 @@ import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
 import { ListUsersDTO } from './data-objects/list-users.dto';
+import { JwtPayload } from '../jwt/jwt.interface';
 
 @Injectable()
 export class AuthService {
@@ -83,7 +84,7 @@ export class AuthService {
   }
 
   public async generateJWT(user: User): Promise<string> {
-    const payload = { sub: user.id, email: user.email };
+    const payload: JwtPayload = { sub: user.id };
     return this.jwtService.signAsync(payload);
   }
 
