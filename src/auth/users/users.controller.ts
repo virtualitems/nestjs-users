@@ -1,5 +1,3 @@
-import * as fs from 'fs';
-
 import {
   BadRequestException,
   Body,
@@ -13,16 +11,11 @@ import {
   Put,
   Query,
   UnauthorizedException,
-  UploadedFile,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { FileInterceptor } from '@nestjs/platform-express';
 
-import { Person } from '../../persons/entities/person.entity';
 import { namespaces, routes } from '../../routes';
-import { multerConfiguration } from '../../multer.config';
 import { AuthService } from '.././auth.service';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
@@ -67,46 +60,30 @@ export class UsersController {
 
   @Post(urls.users.createWithJSON.path)
   @HttpCode(201)
-  @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
-  public async create(
-    @Body() data: CreateUserDTO,
-    @UploadedFile() avatar: Express.Multer.File,
-  ): Promise<void> {
-    if (avatar === undefined) {
-      throw new BadRequestException('No avatar uploaded');
-    }
-
+  public async create(@Body() data: CreateUserDTO): Promise<void> {
     const existent = await this.authService.find({
       email: data.email,
       deletedAt: null,
     });
 
     if (existent !== null) {
-      fs.unlinkSync(avatar.path);
       throw new BadRequestException('User already exists');
     }
-
-    const person: Person = { name: data.name, avatar: avatar.path };
 
     const user: User = {
       email: data.email,
       password: data.password,
-      person: person,
     };
 
-    await this.em.transactional(async (em) => {
-      await this.authService.create(em, user);
-    });
+    await this.authService.create(this.em, user);
   }
 
   @Put(urls.users.updateWithJSON.path)
   @UseGuards(AuthGuard('jwt'))
-  @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
   @HttpCode(204)
   public async update(
     @Param('id') id: number,
     @Body() data: UpdateUserDTO,
-    @UploadedFile() avatar: Express.Multer.File,
   ): Promise<void> {
     const user = await this.authService.find({ id, deletedAt: null });
 
@@ -122,18 +99,7 @@ export class UsersController {
       user.password = this.authService.hashPassword(data.password);
     }
 
-    if (user.person) {
-      if (data.name) {
-        user.person.name = data.name;
-      }
-      if (avatar !== undefined) {
-        user.person.avatar = avatar.path;
-      }
-    }
-
-    await this.em.transactional(async (em) => {
-      await this.authService.update(em, user);
-    });
+    await this.authService.update(this.em, user);
   }
 
   @Delete(urls.users.delete.path)

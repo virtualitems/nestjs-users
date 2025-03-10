@@ -27,15 +27,14 @@ export class AuthService {
     const where: FilterQuery<User> = { deletedAt: null };
 
     if (q !== undefined) {
-      where.$or = [{ email: { $like: `%${q}%` } }];
+      where.email = { $like: `%${q}%` };
     }
 
     const users = await this.repo.findAll({
-      fields: ['id', 'email', 'person.name', 'person.avatar'],
+      fields: ['email'],
       offset,
       limit,
       where,
-      populate: ['person'],
     });
 
     return users;
@@ -47,8 +46,7 @@ export class AuthService {
 
   public async show(filters: Partial<User>): Promise<Partial<User> | null> {
     const user = await this.repo.findOne(filters, {
-      fields: ['id', 'email', 'person.name', 'person.avatar'],
-      populate: ['person'],
+      fields: ['email'],
     });
     return user;
   }

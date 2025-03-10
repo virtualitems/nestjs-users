@@ -9,8 +9,4 @@ export class UpdateUserDTO {
   @IsString()
   @MinLength(8)
   password?: string;
-
-  @IsOptional()
-  @IsString()
-  name?: string;
 }
