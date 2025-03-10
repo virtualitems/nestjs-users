@@ -1,7 +1,7 @@
 import { Transform } from 'class-transformer';
 import { IsString, IsOptional, Min, IsInt, MinLength } from 'class-validator';
 
-export class ListUsersQueryDTO {
+export class ListUsersDTO {
   @Transform(({ value }) => (value ? Number(value) : undefined))
   @IsOptional()
   @IsInt()

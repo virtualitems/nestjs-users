@@ -10,7 +10,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
-import { ListUsersQueryDTO } from './data-objects/list-users.dto';
+import { ListUsersDTO } from './data-objects/list-users.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +19,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async listAll(query: ListUsersQueryDTO): Promise<Partial<User>[]> {
+  public async listAll(query: ListUsersDTO): Promise<Partial<User>[]> {
     const { page = 1, limit = 10, q } = query;
 
     const offset = (page - 1) * limit;
