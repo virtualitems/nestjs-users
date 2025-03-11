@@ -17,6 +17,6 @@ export class User {
   @Property({ fieldName: 'created_at', nullable: true })
   createdAt?: Date | null;
 
-  @Property({ fieldName: 'deleted_at', nullable: true })
+  @Property({ fieldName: 'deleted_at', nullable: true, index: true })
   deletedAt?: Date | null;
 }
