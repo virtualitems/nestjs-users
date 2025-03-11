@@ -10,7 +10,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from '../entities/user.entity';
-import { JwtPayload } from '../jwt/jwt-payload.interface';
+import { JwtPayload } from '../jwt/jwt.interface';
 
 @Injectable()
 export class UsersService {
