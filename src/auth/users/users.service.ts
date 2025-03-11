@@ -83,9 +83,13 @@ export class AuthService {
     return user;
   }
 
-  public async generateJWT(user: User): Promise<string> {
+  public generateJWT(user: User): string {
     const payload: JwtPayload = { sub: user.id };
-    return this.jwtService.signAsync(payload);
+    return this.jwtService.sign(payload);
+  }
+
+  public refreshJWT(payload: JwtPayload): string {
+    return this.jwtService.sign(payload);
   }
 
   public hashPassword(password: string): string {

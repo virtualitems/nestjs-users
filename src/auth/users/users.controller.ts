@@ -12,8 +12,10 @@ import {
   Post,
   Put,
   Query,
+  Res,
   UnauthorizedException,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { namespaces, routes } from '../../routes';
@@ -24,6 +26,8 @@ import { ListUsersDTO } from './data-objects/list-users.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from './users.service';
+import { RefreshTokenInterceptor } from './interceptors/refresh-token.interceptor';
+import { type ServerResponse } from 'node:http';
 
 const urls = routes();
 
@@ -36,6 +40,7 @@ export class UsersController {
 
   @Get(urls.users.listAsJSON.path)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: ListUsersDTO,
@@ -46,6 +51,7 @@ export class UsersController {
 
   @Get(urls.users.showAsJSON.path)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id') id: number,
@@ -81,6 +87,7 @@ export class UsersController {
 
   @Put(urls.users.updateWithJSON.path)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id') id: number,
@@ -105,6 +112,7 @@ export class UsersController {
 
   @Delete(urls.users.delete.path)
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(@Param('id') id: number): Promise<void> {
     const user = await this.authService.find({ id, deletedAt: null });
@@ -117,8 +125,11 @@ export class UsersController {
   }
 
   @Post(urls.users.loginWithJSON.path)
-  @HttpCode(HttpStatus.OK)
-  public async login(@Body() data: AuthUserDTO): Promise<object> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async login(
+    @Body() data: AuthUserDTO,
+    @Res() response: ServerResponse,
+  ): Promise<void> {
     let user: User;
 
     try {
@@ -131,9 +142,10 @@ export class UsersController {
 
     await this.authService.update(this.em, user);
 
-    const accessToken = await this.authService.generateJWT(user);
+    const accessToken = this.authService.generateJWT(user);
     const authorization = `Bearer ${accessToken}`;
 
-    return { authorization };
+    response.setHeader('Authorization', authorization);
+    response.end();
   }
 }
