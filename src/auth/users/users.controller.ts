@@ -25,7 +25,7 @@ import { CreateUserDTO } from './data-objects/create-user.dto';
 import { PaginationDTO } from '../shared/data-objects/pagination.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
-import { AuthService } from './users.service';
+import { UsersService } from './users.service';
 import { RefreshTokenInterceptor } from './interceptors/refresh-token.interceptor';
 import { type ServerResponse } from 'node:http';
 
@@ -34,7 +34,7 @@ const urls = routes();
 @Controller(namespaces.users)
 export class UsersController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
     private readonly em: EntityManager,
   ) {}
 
@@ -46,7 +46,7 @@ export class UsersController {
     @Query() query: PaginationDTO,
   ): Promise<HttpJsonResponse<Partial<User>[]>> {
     const { page, limit, q } = query;
-    const users = await this.authService.listAll(page, limit, q);
+    const users = await this.usersService.listAll(page, limit, q);
     return { data: users };
   }
 
@@ -57,7 +57,7 @@ export class UsersController {
   public async show(
     @Param('id') id: number,
   ): Promise<HttpJsonResponse<Partial<User>>> {
-    const user = await this.authService.show({ id });
+    const user = await this.usersService.show({ id });
 
     if (user === null) {
       throw new NotFoundException('User not found');
@@ -69,7 +69,7 @@ export class UsersController {
   @Post(urls.users.createWithJSON.path)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() data: CreateUserDTO): Promise<void> {
-    const existent = await this.authService.find({
+    const existent = await this.usersService.find({
       email: data.email,
       deletedAt: null,
     });
@@ -83,7 +83,7 @@ export class UsersController {
       password: data.password,
     };
 
-    await this.authService.create(this.em, user);
+    await this.usersService.create(this.em, user);
   }
 
   @Put(urls.users.updateWithJSON.path)
@@ -94,7 +94,7 @@ export class UsersController {
     @Param('id') id: number,
     @Body() data: UpdateUserDTO,
   ): Promise<void> {
-    const user = await this.authService.find({ id, deletedAt: null });
+    const user = await this.usersService.find({ id, deletedAt: null });
 
     if (Object.keys(data).length === 0) {
       return;
@@ -109,10 +109,10 @@ export class UsersController {
     }
 
     if (data.password) {
-      user.password = this.authService.hashPassword(data.password);
+      user.password = this.usersService.hashPassword(data.password);
     }
 
-    await this.authService.update(this.em, user);
+    await this.usersService.update(this.em, user);
   }
 
   @Delete(urls.users.delete.path)
@@ -120,13 +120,13 @@ export class UsersController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async delete(@Param('id') id: number): Promise<void> {
-    const user = await this.authService.find({ id, deletedAt: null });
+    const user = await this.usersService.find({ id, deletedAt: null });
 
     if (user === null) {
       throw new NotFoundException('User not found');
     }
 
-    await this.authService.delete(this.em, user);
+    await this.usersService.delete(this.em, user);
   }
 
   @Post(urls.users.loginWithJSON.path)
@@ -138,16 +138,16 @@ export class UsersController {
     let user: User;
 
     try {
-      user = await this.authService.authenticate(data.email, data.password);
+      user = await this.usersService.authenticate(data.email, data.password);
     } catch {
       throw new UnauthorizedException('Invalid credentials');
     }
 
     user.lastLogin = new Date();
 
-    await this.authService.update(this.em, user);
+    await this.usersService.update(this.em, user);
 
-    const accessToken = this.authService.generateJWT(user);
+    const accessToken = this.usersService.generateJWT(user);
     const authorization = `Bearer ${accessToken}`;
 
     response.setHeader('Authorization', authorization);

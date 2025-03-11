@@ -6,7 +6,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { AuthService } from '../users.service';
+import { UsersService } from '../users.service';
 import { JwtPayload } from '../../jwt/jwt.interface';
 import { type ClientRequest, type ServerResponse } from 'node:http';
 
@@ -16,7 +16,7 @@ type RequestWithContext = ClientRequest & {
 
 @Injectable()
 export class RefreshTokenInterceptor implements NestInterceptor {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest<RequestWithContext>();
@@ -27,7 +27,7 @@ export class RefreshTokenInterceptor implements NestInterceptor {
 
     const { sub, pms, ugs } = request.user;
 
-    const token = this.authService.refreshJWT({ sub, pms, ugs });
+    const token = this.usersService.refreshJWT({ sub, pms, ugs });
 
     if (token === undefined) {
       return next.handle();

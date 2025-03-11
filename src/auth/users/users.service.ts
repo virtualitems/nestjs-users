@@ -13,7 +13,7 @@ import { User } from './entities/user.entity';
 import { JwtPayload } from '../jwt/jwt.interface';
 
 @Injectable()
-export class AuthService {
+export class UsersService {
   constructor(
     @InjectRepository(User) private readonly repo: EntityRepository<User>,
     private readonly jwtService: JwtService,
