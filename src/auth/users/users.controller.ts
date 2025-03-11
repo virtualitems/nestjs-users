@@ -46,7 +46,7 @@ export class UsersController {
     @Query() query: PaginationDTO,
   ): Promise<HttpJsonResponse<Partial<User>[]>> {
     const { page, limit, q } = query;
-    const users = await this.usersService.listAll(page, limit, q);
+    const users = await this.usersService.list(page, limit, q);
     return { data: users };
   }
 
