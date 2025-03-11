@@ -9,8 +9,8 @@ import {
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
-import { User } from './entities/user.entity';
-import { JwtPayload } from '../jwt/jwt.interface';
+import { User } from '../entities/user.entity';
+import { JwtPayload } from '../jwt/jwt-payload.interface';
 
 @Injectable()
 export class UsersService {

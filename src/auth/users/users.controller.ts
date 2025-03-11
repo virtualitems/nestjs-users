@@ -24,7 +24,7 @@ import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
-import { User } from './entities/user.entity';
+import { User } from '../entities/user.entity';
 import { UsersService } from './users.service';
 import { RefreshTokenInterceptor } from './interceptors/refresh-token.interceptor';
 import { type ServerResponse } from 'node:http';

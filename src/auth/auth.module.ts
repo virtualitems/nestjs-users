@@ -4,13 +4,13 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 
 import { JwtStrategy } from './jwt/jwt.strategy';
-import { GroupPermission } from './permissions/entities/group-permission.entity';
-import { Group } from './permissions/entities/group.entity';
-import { Permission } from './permissions/entities/permission.entity';
-import { UserGroup } from './permissions/entities/user-group.entity';
-import { UserPermission } from './permissions/entities/user-permission.entity';
-import { UserGroupsController } from './permissions/permissions.controller';
-import { User } from './users/entities/user.entity';
+import { GroupPermission } from './entities/group-permission.entity';
+import { Group } from './entities/group.entity';
+import { Permission } from './entities/permission.entity';
+import { UserGroup } from './entities/user-group.entity';
+import { UserPermission } from './entities/user-permission.entity';
+import { GroupsController } from './groups/groups.controller';
+import { User } from './entities/user.entity';
 import { UsersController } from './users/users.controller';
 import { UsersService } from './users/users.service';
 
@@ -36,7 +36,7 @@ import { UsersService } from './users/users.service';
       ],
     }),
   ],
-  controllers: [UsersController, UserGroupsController],
+  controllers: [UsersController, GroupsController],
   providers: [UsersService, JwtStrategy],
 })
 export class AuthModule {}
