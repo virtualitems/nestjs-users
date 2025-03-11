@@ -21,6 +21,7 @@ async function bootstrap(socketPath: string): Promise<void> {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
