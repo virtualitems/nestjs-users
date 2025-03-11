@@ -22,7 +22,7 @@ import { namespaces, routes } from '../../routes';
 import { JwtAuthGuard } from '../jwt/jwt.guard';
 import { AuthUserDTO } from './data-objects/auth-user.dto';
 import { CreateUserDTO } from './data-objects/create-user.dto';
-import { ListUsersDTO } from './data-objects/list-users.dto';
+import { PaginationDTO } from '../shared/data-objects/pagination.dto';
 import { UpdateUserDTO } from './data-objects/update-user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from './users.service';
@@ -43,9 +43,10 @@ export class UsersController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
-    @Query() query: ListUsersDTO,
+    @Query() query: PaginationDTO,
   ): Promise<HttpJsonResponse<Partial<User>[]>> {
-    const users = await this.authService.listAll(query);
+    const { page, limit, q } = query;
+    const users = await this.authService.listAll(page, limit, q);
     return { data: users };
   }
 
@@ -94,6 +95,10 @@ export class UsersController {
     @Body() data: UpdateUserDTO,
   ): Promise<void> {
     const user = await this.authService.find({ id, deletedAt: null });
+
+    if (Object.keys(data).length === 0) {
+      return;
+    }
 
     if (user === null) {
       throw new NotFoundException('User not found');

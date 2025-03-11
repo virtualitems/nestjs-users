@@ -10,7 +10,6 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from './entities/user.entity';
-import { ListUsersDTO } from './data-objects/list-users.dto';
 import { JwtPayload } from '../jwt/jwt.interface';
 
 @Injectable()
@@ -20,9 +19,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  public async listAll(query: ListUsersDTO): Promise<Partial<User>[]> {
-    const { page = 1, limit = 10, q } = query;
-
+  public async listAll(
+    page = 1,
+    limit = 10,
+    q?: string,
+  ): Promise<Partial<User>[]> {
     const offset = (page - 1) * limit;
 
     const where: FilterQuery<User> = { deletedAt: null };
