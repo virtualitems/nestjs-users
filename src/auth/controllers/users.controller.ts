@@ -1,3 +1,5 @@
+import { type ServerResponse } from 'node:http';
+
 import { EntityManager } from '@mikro-orm/sqlite';
 import {
   BadRequestException,
@@ -19,15 +21,15 @@ import {
 } from '@nestjs/common';
 
 import { namespaces, routes } from '../../routes';
+import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
+
+import { type LoginUserDTO } from '../data-objects/login-user.dto';
+import { type CreateUserDTO } from '../data-objects/create-user.dto';
+import { type UpdateUserDTO } from '../data-objects/update-user.dto';
+import { type User } from '../entities/user.entity';
 import { JwtAuthGuard } from '../jwt/jwt.guard';
-import { AuthUserDTO } from '../data-objects/auth-user.dto';
-import { CreateUserDTO } from '../data-objects/create-user.dto';
-import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
-import { UpdateUserDTO } from '../data-objects/update-user.dto';
-import { User } from '../entities/user.entity';
-import { UsersService } from '../services/users.service';
 import { RefreshTokenInterceptor } from '../jwt/jwt.interceptor';
-import { type ServerResponse } from 'node:http';
+import { type UsersService } from '../services/users.service';
 
 const urls = routes();
 
@@ -132,7 +134,7 @@ export class UsersController {
   @Post(urls.users.loginWithJSON.path)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
-    @Body() data: AuthUserDTO,
+    @Body() data: LoginUserDTO,
     @Res() response: ServerResponse,
   ): Promise<void> {
     let user: User;

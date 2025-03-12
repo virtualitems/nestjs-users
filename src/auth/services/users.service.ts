@@ -1,16 +1,16 @@
 import { createHash } from 'node:crypto';
 
-import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@mikro-orm/nestjs';
 import {
-  EntityManager,
-  EntityRepository,
-  FilterQuery,
+  type EntityManager,
+  type EntityRepository,
+  type FilterQuery,
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
+import { type JwtService } from '@nestjs/jwt';
 
 import { User } from '../entities/user.entity';
-import { JwtPayload } from '../jwt/jwt.interface';
+import { type JwtPayload } from '../jwt/jwt.interface';
 
 @Injectable()
 export class UsersService {

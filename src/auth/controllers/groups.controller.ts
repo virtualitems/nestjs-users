@@ -14,10 +14,10 @@ import {
   Query,
 } from '@nestjs/common';
 
-import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
-import { CreateGroupDTO } from '../data-objects/create-group.dto';
-import { UpdateGroupDTO } from '../data-objects/update-group.dto';
-import { GroupsService } from '../services/groups.service';
+import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
+import { type CreateGroupDTO } from '../data-objects/create-group.dto';
+import { type UpdateGroupDTO } from '../data-objects/update-group.dto';
+import { type GroupsService } from '../services/groups.service';
 
 @Controller('groups')
 export class GroupsController {
