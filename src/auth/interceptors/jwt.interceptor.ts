@@ -1,14 +1,15 @@
+import { type ClientRequest, type ServerResponse } from 'node:http';
+
 import {
+  CallHandler,
+  ExecutionContext,
   Injectable,
   NestInterceptor,
-  ExecutionContext,
-  CallHandler,
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { UsersService } from '../providers/users.service';
 import { JwtPayload } from '../interfaces/jwt.interface';
-import { type ClientRequest, type ServerResponse } from 'node:http';
+import { SessionService } from '../providers/session.service';
 
 type RequestWithContext = ClientRequest & {
   user?: JwtPayload;
@@ -16,10 +17,11 @@ type RequestWithContext = ClientRequest & {
 
 @Injectable()
 export class RefreshTokenInterceptor implements NestInterceptor {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(protected readonly sessionService: SessionService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest<RequestWithContext>();
+    const response = context.switchToHttp().getResponse<ServerResponse>();
 
     if (request.user === undefined) {
       throw new UnauthorizedException();
@@ -27,13 +29,11 @@ export class RefreshTokenInterceptor implements NestInterceptor {
 
     const { sub, pms, ugs } = request.user;
 
-    const token = this.usersService.refreshJWT({ sub, pms, ugs });
+    const token = this.sessionService.generate({ sub, pms, ugs });
 
     if (token === undefined) {
       return next.handle();
     }
-
-    const response = context.switchToHttp().getResponse<ServerResponse>();
 
     response.setHeader('Authorization', `Bearer ${token}`);
 
