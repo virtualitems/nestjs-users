@@ -5,6 +5,12 @@ export class Group {
   @PrimaryKey({ fieldName: 'id' })
   id!: number;
 
-  @Property({ fieldName: 'name' })
-  name!: string;
+  @Property({ fieldName: 'description' })
+  description!: string;
+
+  @Property({ fieldName: 'created_at', nullable: true })
+  createdAt!: Date;
+
+  @Property({ fieldName: 'deleted_at', nullable: true, index: true })
+  deletedAt?: Date;
 }
