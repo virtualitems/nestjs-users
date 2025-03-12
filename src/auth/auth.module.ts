@@ -42,6 +42,7 @@ import { UsersService } from './providers/users.service';
   ],
   controllers: [UsersController, GroupsController],
   providers: [
+    ConfigService,
     GroupsService,
     JwtService,
     JwtStrategy,

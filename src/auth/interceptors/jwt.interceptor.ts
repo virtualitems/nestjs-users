@@ -29,7 +29,7 @@ export class RefreshTokenInterceptor implements NestInterceptor {
 
     const { sub, pms, ugs } = request.user;
 
-    const token = this.securityService.generate({ sub, pms, ugs });
+    const token = this.securityService.generateToken({ sub, pms, ugs });
 
     if (token === undefined) {
       return next.handle();

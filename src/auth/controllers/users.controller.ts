@@ -176,7 +176,7 @@ export class UsersController {
       { id: user.id },
     );
 
-    const token = this.securityService.generate({ sub: user.id });
+    const token = this.securityService.generateToken({ sub: user.id });
 
     const authorization = `Bearer ${token}`;
 
