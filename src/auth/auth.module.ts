@@ -9,11 +9,11 @@ import { Group } from './entities/group.entity';
 import { Permission } from './entities/permission.entity';
 import { UserGroup } from './entities/user-group.entity';
 import { UserPermission } from './entities/user-permission.entity';
-import { GroupsController } from './groups/groups.controller';
+import { GroupsController } from './controllers/groups.controller';
 import { User } from './entities/user.entity';
-import { UsersController } from './users/users.controller';
-import { UsersService } from './users/users.service';
-import { GroupsService } from './groups/groups.service';
+import { UsersController } from './controllers/users.controller';
+import { UsersService } from './services/users.service';
+import { GroupsService } from './services/groups.service';
 
 @Module({
   imports: [

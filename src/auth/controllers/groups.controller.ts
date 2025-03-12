@@ -17,7 +17,7 @@ import {
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { CreateGroupDTO } from '../data-objects/create-group.dto';
 import { UpdateGroupDTO } from '../data-objects/update-group.dto';
-import { GroupsService } from './groups.service';
+import { GroupsService } from '../services/groups.service';
 
 @Controller('groups')
 export class GroupsController {

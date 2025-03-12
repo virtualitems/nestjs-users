@@ -6,8 +6,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 
-import { UsersService } from '../users.service';
-import { JwtPayload } from '../../jwt/jwt.interface';
+import { UsersService } from '../services/users.service';
+import { JwtPayload } from './jwt.interface';
 import { type ClientRequest, type ServerResponse } from 'node:http';
 
 type RequestWithContext = ClientRequest & {
