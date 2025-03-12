@@ -51,7 +51,7 @@ export class GroupsController {
       this.em,
       page,
       limit,
-      ['id', 'slug', 'description'],
+      ['id', 'description'],
       where,
     );
 
@@ -67,7 +67,7 @@ export class GroupsController {
   ): Promise<HttpJsonResponse<object>> {
     const entity = await this.groupsService.find(
       this.em,
-      ['id', 'slug', 'description'],
+      ['id', 'description'],
       { id, deletedAt: null },
     );
 
@@ -85,7 +85,6 @@ export class GroupsController {
   public async create(@Body() body: CreateGroupDTO): Promise<void> {
     const data = {
       ...body,
-      slug: new Date().getTime().toString(36),
       createdAt: new Date(),
     };
 

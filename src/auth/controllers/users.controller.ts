@@ -52,17 +52,14 @@ export class UsersController {
     const where: FilterQuery<User> = { deletedAt: null };
 
     if (q !== undefined) {
-      where.$or = [
-        { slug: { $like: `%${q}%` } },
-        { email: { $like: `%${q}%` } },
-      ];
+      where.email = { $like: `%${q}%` };
     }
 
     const entities = await this.usersService.list(
       this.em,
       page,
       limit,
-      ['id', 'slug', 'email', 'lastLogin'],
+      ['id', 'email', 'lastLogin'],
       where,
     );
 
@@ -78,7 +75,7 @@ export class UsersController {
   ): Promise<HttpJsonResponse<object>> {
     const user = await this.usersService.find(
       this.em,
-      ['id', 'slug', 'email', 'lastLogin'],
+      ['id', 'email', 'lastLogin'],
       { id, deletedAt: null },
     );
 
@@ -103,7 +100,6 @@ export class UsersController {
 
     const data = {
       ...body,
-      slug: new Date().getTime().toString(36),
       password: this.securityService.hash(body.password),
       createdAt: new Date(),
     };
