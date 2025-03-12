@@ -5,8 +5,8 @@ export class Permission {
   @PrimaryKey({ fieldName: 'id' })
   id!: number;
 
-  @Property({ fieldName: 'codename' })
-  codename!: string;
+  @Property({ fieldName: 'slug', index: true })
+  slug!: string;
 
   @Property({ fieldName: 'description' })
   description!: string;
