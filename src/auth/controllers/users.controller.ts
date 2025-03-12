@@ -11,6 +11,7 @@ import {
   HttpStatus,
   NotFoundException,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -20,59 +21,77 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { namespaces, routes } from '../../routes';
 import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
 
 import { type LoginUserDTO } from '../data-objects/login-user.dto';
 import { type CreateUserDTO } from '../data-objects/create-user.dto';
 import { type UpdateUserDTO } from '../data-objects/update-user.dto';
-import { type User } from '../entities/user.entity';
-import { JwtAuthGuard } from '../jwt/jwt.guard';
-import { RefreshTokenInterceptor } from '../jwt/jwt.interceptor';
-import { type UsersService } from '../services/users.service';
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
+import { type UsersService } from '../providers/users.service';
+import { type SessionService } from '../providers/session.service';
 
-const urls = routes();
-
-@Controller(namespaces.users)
+@Controller('users')
 export class UsersController {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly em: EntityManager,
+    protected readonly usersService: UsersService,
+    protected readonly sessionService: SessionService,
+    protected readonly em: EntityManager,
   ) {}
 
-  @Get(urls.users.listAsJSON.path)
+  @Get()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: PaginationDTO,
-  ): Promise<HttpJsonResponse<Partial<User>[]>> {
-    const { page, limit, q } = query;
-    const users = await this.usersService.list(page, limit, q);
-    return { data: users };
+  ): Promise<HttpJsonResponse<object[]>> {
+    const { page = 1, limit = 100, q } = query;
+
+    const where = { deletedAt: null };
+
+    if (q !== undefined) {
+      where['description'] = { $like: `%${q}%` };
+    }
+
+    const entities = await this.usersService.list(
+      this.em,
+      page,
+      limit,
+      ['id', 'email', 'lastLogin'],
+      where,
+    );
+
+    return { data: entities };
   }
 
-  @Get(urls.users.showAsJSON.path)
+  @Get(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
-    @Param('id') id: number,
-  ): Promise<HttpJsonResponse<Partial<User>>> {
-    const user = await this.usersService.show({ id });
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object>> {
+    const user = await this.usersService.find(
+      this.em,
+      ['id', 'email', 'lastLogin'],
+      { id, deletedAt: null },
+    );
 
     if (user === null) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException();
     }
 
     return { data: user };
   }
 
-  @Post(urls.users.createWithJSON.path)
+  @Post()
+  // @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
-  public async create(@Body() data: CreateUserDTO): Promise<void> {
-    const existent = await this.usersService.find({
-      email: data.email,
+  public async create(@Body() body: CreateUserDTO): Promise<void> {
+    const existent = await this.usersService.find(this.em, ['id'], {
+      email: body.email,
       deletedAt: null,
     });
 
@@ -80,77 +99,85 @@ export class UsersController {
       throw new BadRequestException('User already exists');
     }
 
-    const user: User = {
-      email: data.email,
-      password: data.password,
-    };
+    const data = { ...body, createdAt: new Date() };
 
-    await this.usersService.create(this.em, user);
+    await this.usersService.create(this.em, data);
   }
 
-  @Put(urls.users.updateWithJSON.path)
+  @Put(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
-    @Param('id') id: number,
-    @Body() data: UpdateUserDTO,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: UpdateUserDTO,
   ): Promise<void> {
-    const user = await this.usersService.find({ id, deletedAt: null });
-
-    if (Object.keys(data).length === 0) {
-      return;
+    if (Object.keys(body).length === 0) {
+      throw new BadRequestException('No data provided');
     }
 
-    if (user === null) {
-      throw new NotFoundException('User not found');
+    const existent = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (existent === null) {
+      throw new NotFoundException();
     }
 
-    if (data.email) {
-      user.email = data.email;
+    const data = { ...body, updatedAt: new Date() };
+
+    if (body.password !== undefined) {
+      data.password = this.sessionService.hash(body.password);
     }
 
-    if (data.password) {
-      user.password = this.usersService.hashPassword(data.password);
-    }
-
-    await this.usersService.update(this.em, user);
+    await this.usersService.update(this.em, body, { id });
   }
 
-  @Delete(urls.users.delete.path)
+  @Delete(':id')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async delete(@Param('id') id: number): Promise<void> {
-    const user = await this.usersService.find({ id, deletedAt: null });
+  public async remove(@Param('id') id: number): Promise<void> {
+    const existent = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
 
-    if (user === null) {
-      throw new NotFoundException('User not found');
+    if (existent === null) {
+      throw new NotFoundException();
     }
 
-    await this.usersService.delete(this.em, user);
+    await this.usersService.remove(this.em, { id });
   }
 
-  @Post(urls.users.loginWithJSON.path)
+  @Post('login')
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
-    @Body() data: LoginUserDTO,
+    @Body() body: LoginUserDTO,
     @Res() response: ServerResponse,
   ): Promise<void> {
-    let user: User;
+    const password = this.sessionService.hash(body.password);
 
-    try {
-      user = await this.usersService.authenticate(data.email, data.password);
-    } catch {
-      throw new UnauthorizedException('Invalid credentials');
+    const user = await this.usersService.find(this.em, ['id'], {
+      email: body.email,
+      password,
+      deletedAt: null,
+    });
+
+    if (user === null) {
+      throw new UnauthorizedException();
     }
 
-    user.lastLogin = new Date();
+    await this.usersService.update(
+      this.em,
+      { lastLogin: new Date() },
+      { id: user.id },
+    );
 
-    await this.usersService.update(this.em, user);
+    const token = this.sessionService.generate({ sub: user.id });
 
-    const accessToken = this.usersService.generateJWT(user);
-    const authorization = `Bearer ${accessToken}`;
+    const authorization = `Bearer ${token}`;
 
     response.setHeader('Authorization', authorization);
     response.end();

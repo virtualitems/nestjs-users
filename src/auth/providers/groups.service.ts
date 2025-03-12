@@ -8,10 +8,10 @@ import { Group } from '../entities/group.entity';
 
 @Injectable()
 export class GroupsService {
-  async list(
+  public async list(
     em: EntityManager,
-    page: number = 1,
-    limit: number = 10,
+    page: number,
+    limit: number,
     fields: (keyof Group)[],
     where?: FilterQuery<Group>,
   ): Promise<Group[]> {
@@ -35,7 +35,7 @@ export class GroupsService {
     return entities;
   }
 
-  async find(
+  public async find(
     em: EntityManager,
     fields: (keyof Group)[],
     where: FilterQuery<Group>,
@@ -44,12 +44,12 @@ export class GroupsService {
     return entity;
   }
 
-  async create(em: EntityManager, data: RequiredEntityData<Group>) {
+  public async create(em: EntityManager, data: RequiredEntityData<Group>) {
     const entity = em.create(Group, data);
     await em.persist(entity).flush();
   }
 
-  async update(
+  public async update(
     em: EntityManager,
     data: Partial<Group>,
     where: FilterQuery<Group>,
@@ -63,7 +63,10 @@ export class GroupsService {
     await em.flush();
   }
 
-  async remove(em: EntityManager, where: FilterQuery<Group>): Promise<void> {
+  public async remove(
+    em: EntityManager,
+    where: FilterQuery<Group>,
+  ): Promise<void> {
     const date = new Date();
 
     const targets = await em.find(Group, where);

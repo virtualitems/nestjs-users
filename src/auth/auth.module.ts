@@ -1,19 +1,22 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 
-import { JwtStrategy } from './jwt/jwt.strategy';
+import { GroupsController } from './controllers/groups.controller';
+import { UsersController } from './controllers/users.controller';
+
 import { GroupPermission } from './entities/group-permission.entity';
 import { Group } from './entities/group.entity';
 import { Permission } from './entities/permission.entity';
 import { UserGroup } from './entities/user-group.entity';
 import { UserPermission } from './entities/user-permission.entity';
-import { GroupsController } from './controllers/groups.controller';
 import { User } from './entities/user.entity';
-import { UsersController } from './controllers/users.controller';
-import { UsersService } from './services/users.service';
-import { GroupsService } from './services/groups.service';
+
+import { GroupsService } from './providers/groups.service';
+import { JwtStrategy } from './providers/jwt.strategy';
+import { SessionService } from './providers/session.service';
+import { UsersService } from './providers/users.service';
 
 @Module({
   imports: [
@@ -38,6 +41,12 @@ import { GroupsService } from './services/groups.service';
     }),
   ],
   controllers: [UsersController, GroupsController],
-  providers: [JwtStrategy, UsersService, GroupsService],
+  providers: [
+    GroupsService,
+    JwtService,
+    JwtStrategy,
+    SessionService,
+    UsersService,
+  ],
 })
 export class AuthModule {}

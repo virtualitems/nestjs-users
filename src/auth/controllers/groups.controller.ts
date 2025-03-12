@@ -1,5 +1,6 @@
 import { EntityManager } from '@mikro-orm/sqlite';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,24 +13,31 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { type CreateGroupDTO } from '../data-objects/create-group.dto';
 import { type UpdateGroupDTO } from '../data-objects/update-group.dto';
-import { type GroupsService } from '../services/groups.service';
+import { type GroupsService } from '../providers/groups.service';
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 
 @Controller('groups')
 export class GroupsController {
   constructor(
-    private readonly groupsService: GroupsService,
-    private readonly em: EntityManager,
+    protected readonly groupsService: GroupsService,
+    protected readonly em: EntityManager,
   ) {}
 
   @Get()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  async list(@Query() query: PaginationDTO): Promise<object[]> {
+  public async list(
+    @Query() query: PaginationDTO,
+  ): Promise<HttpJsonResponse<object[]>> {
     const { page = 1, limit = 10, q } = query;
 
     const where = { deletedAt: null };
@@ -46,13 +54,16 @@ export class GroupsController {
       where,
     );
 
-    return entities;
+    return { data: entities };
   }
 
   @Get(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  async show(@Param('id', ParseIntPipe) id: number): Promise<object> {
+  public async show(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object>> {
     const entity = await this.groupsService.find(
       this.em,
       ['id', 'description'],
@@ -63,24 +74,30 @@ export class GroupsController {
       throw new NotFoundException();
     }
 
-    return entity;
+    return { data: entity };
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() body: CreateGroupDTO): Promise<void> {
+  public async create(@Body() body: CreateGroupDTO): Promise<void> {
     const data = { ...body, createdAt: new Date() };
     await this.groupsService.create(this.em, data);
   }
 
   @Put(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async update(
+  public async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() body: UpdateGroupDTO,
   ): Promise<void> {
+    if (Object.keys(body).length === 0) {
+      throw new BadRequestException('No data provided');
+    }
+
     const existent = await this.groupsService.find(this.em, ['id'], {
       id,
       deletedAt: null,
@@ -94,9 +111,10 @@ export class GroupsController {
   }
 
   @Delete(':id')
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id', ParseIntPipe) id: number) {
+  public async remove(@Param('id', ParseIntPipe) id: number) {
     const existent = await this.groupsService.find(this.em, ['id'], {
       id,
       deletedAt: null,
