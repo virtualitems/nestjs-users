@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/sqlite';
+import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import {
   BadRequestException,
   Body,
@@ -23,6 +23,7 @@ import { UpdateGroupDTO } from '../data-objects/update-group.dto';
 import { GroupsService } from '../providers/groups.service';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
+import { Group } from '../entities/group.entity';
 
 @Controller('groups')
 export class GroupsController {
@@ -40,17 +41,17 @@ export class GroupsController {
   ): Promise<HttpJsonResponse<object[]>> {
     const { page = 1, limit = 10, q } = query;
 
-    const where = { deletedAt: null };
+    const where: FilterQuery<Group> = { deletedAt: null };
 
     if (q !== undefined) {
-      where['description'] = { $like: `%${q}%` };
+      where.description = { $like: `%${q}%` };
     }
 
     const entities = await this.groupsService.list(
       this.em,
       page,
       limit,
-      ['id', 'description'],
+      ['id', 'slug', 'description'],
       where,
     );
 
@@ -66,7 +67,7 @@ export class GroupsController {
   ): Promise<HttpJsonResponse<object>> {
     const entity = await this.groupsService.find(
       this.em,
-      ['id', 'description'],
+      ['id', 'slug', 'description'],
       { id, deletedAt: null },
     );
 

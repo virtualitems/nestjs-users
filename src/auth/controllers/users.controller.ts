@@ -1,6 +1,6 @@
 import { type ServerResponse } from 'node:http';
 
-import { EntityManager } from '@mikro-orm/sqlite';
+import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import {
   BadRequestException,
   Body,
@@ -30,6 +30,7 @@ import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
 import { SecurityService } from '../providers/security.service';
+import { User } from '../entities/user.entity';
 
 @Controller('users')
 export class UsersController {
@@ -48,17 +49,20 @@ export class UsersController {
   ): Promise<HttpJsonResponse<object[]>> {
     const { page = 1, limit = 100, q } = query;
 
-    const where = { deletedAt: null };
+    const where: FilterQuery<User> = { deletedAt: null };
 
     if (q !== undefined) {
-      where['description'] = { $like: `%${q}%` };
+      where.$or = [
+        { slug: { $like: `%${q}%` } },
+        { email: { $like: `%${q}%` } },
+      ];
     }
 
     const entities = await this.usersService.list(
       this.em,
       page,
       limit,
-      ['id', 'email', 'lastLogin'],
+      ['id', 'slug', 'email', 'lastLogin'],
       where,
     );
 
@@ -74,7 +78,7 @@ export class UsersController {
   ): Promise<HttpJsonResponse<object>> {
     const user = await this.usersService.find(
       this.em,
-      ['id', 'email', 'lastLogin'],
+      ['id', 'slug', 'email', 'lastLogin'],
       { id, deletedAt: null },
     );
 
@@ -100,6 +104,7 @@ export class UsersController {
     const data = {
       ...body,
       slug: new Date().getTime().toString(36),
+      password: this.securityService.hash(body.password),
       createdAt: new Date(),
     };
 
