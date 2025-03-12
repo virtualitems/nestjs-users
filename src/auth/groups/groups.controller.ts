@@ -1,3 +1,4 @@
+import { EntityManager } from '@mikro-orm/sqlite';
 import {
   Body,
   Controller,
@@ -12,11 +13,11 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+
+import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
+import { CreateGroupDTO } from '../data-objects/create-group.dto';
+import { UpdateGroupDTO } from '../data-objects/update-group.dto';
 import { GroupsService } from './groups.service';
-import { CreateGroupDTO } from './data-objects/create-group.dto';
-import { EntityManager } from '@mikro-orm/sqlite';
-import { PaginationDTO } from 'src/shared/data-objects/pagination.dto';
-import { UpdateGroupDTO } from './data-objects/update-group.dto';
 
 @Controller('groups')
 export class GroupsController {
