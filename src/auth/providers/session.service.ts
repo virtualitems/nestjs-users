@@ -3,7 +3,7 @@ import { createHash } from 'node:crypto';
 import { Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 
-import { type JwtPayload } from '../interfaces/jwt.interface';
+import { JwtPayload } from '../interfaces/jwt.interface';
 
 @Injectable()
 export class SessionService {

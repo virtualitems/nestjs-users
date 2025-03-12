@@ -1,7 +1,7 @@
 import {
   RequiredEntityData,
-  type EntityManager,
-  type FilterQuery,
+  EntityManager,
+  FilterQuery,
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 

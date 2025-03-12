@@ -17,9 +17,9 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
-import { type CreateGroupDTO } from '../data-objects/create-group.dto';
-import { type UpdateGroupDTO } from '../data-objects/update-group.dto';
+import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
+import { CreateGroupDTO } from '../data-objects/create-group.dto';
+import { UpdateGroupDTO } from '../data-objects/update-group.dto';
 import { GroupsService } from '../providers/groups.service';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';

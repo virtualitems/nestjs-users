@@ -21,11 +21,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
+import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 
-import { type LoginUserDTO } from '../data-objects/login-user.dto';
-import { type CreateUserDTO } from '../data-objects/create-user.dto';
-import { type UpdateUserDTO } from '../data-objects/update-user.dto';
+import { LoginUserDTO } from '../data-objects/login-user.dto';
+import { CreateUserDTO } from '../data-objects/create-user.dto';
+import { UpdateUserDTO } from '../data-objects/update-user.dto';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
@@ -86,8 +86,6 @@ export class UsersController {
   }
 
   @Post()
-  // @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateUserDTO): Promise<void> {
     const existent = await this.usersService.find(this.em, ['id'], {
@@ -99,7 +97,10 @@ export class UsersController {
       throw new BadRequestException('User already exists');
     }
 
-    const data = { ...body, createdAt: new Date() };
+    const data = {
+      ...body,
+      createdAt: new Date(),
+    };
 
     await this.usersService.create(this.em, data);
   }
