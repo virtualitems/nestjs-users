@@ -15,11 +15,11 @@ export class GroupsService {
     fields: (keyof Group)[],
     where?: FilterQuery<Group>,
   ): Promise<Group[]> {
-    if (page < 0) {
+    if (page < 1) {
       throw new Error('Invalid page number');
     }
 
-    if (limit < 0) {
+    if (limit < 1) {
       throw new Error('Invalid limit number');
     }
 
