@@ -6,7 +6,7 @@ import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { JwtPayload } from '../interfaces/jwt.interface';
 
 @Injectable()
-export class SessionService {
+export class SecurityService {
   constructor(protected readonly jwtService: JwtService) {}
 
   public generate(payload: JwtPayload, options?: JwtSignOptions): string {

@@ -15,7 +15,7 @@ import { User } from './entities/user.entity';
 
 import { GroupsService } from './providers/groups.service';
 import { JwtStrategy } from './providers/jwt.strategy';
-import { SessionService } from './providers/session.service';
+import { SecurityService } from './providers/security.service';
 import { UsersService } from './providers/users.service';
 
 @Module({
@@ -45,7 +45,7 @@ import { UsersService } from './providers/users.service';
     GroupsService,
     JwtService,
     JwtStrategy,
-    SessionService,
+    SecurityService,
     UsersService,
   ],
 })

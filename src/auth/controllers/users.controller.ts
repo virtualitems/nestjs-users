@@ -29,13 +29,13 @@ import { UpdateUserDTO } from '../data-objects/update-user.dto';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
-import { SessionService } from '../providers/session.service';
+import { SecurityService } from '../providers/security.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     protected readonly usersService: UsersService,
-    protected readonly sessionService: SessionService,
+    protected readonly securityService: SecurityService,
     protected readonly em: EntityManager,
   ) {}
 
@@ -129,7 +129,7 @@ export class UsersController {
     const data = { ...body, updatedAt: new Date() };
 
     if (body.password !== undefined) {
-      data.password = this.sessionService.hash(body.password);
+      data.password = this.securityService.hash(body.password);
     }
 
     await this.usersService.update(this.em, body, { id });
@@ -158,7 +158,7 @@ export class UsersController {
     @Body() body: LoginUserDTO,
     @Res() response: ServerResponse,
   ): Promise<void> {
-    const password = this.sessionService.hash(body.password);
+    const password = this.securityService.hash(body.password);
 
     const user = await this.usersService.find(this.em, ['id'], {
       email: body.email,
@@ -176,7 +176,7 @@ export class UsersController {
       { id: user.id },
     );
 
-    const token = this.sessionService.generate({ sub: user.id });
+    const token = this.securityService.generate({ sub: user.id });
 
     const authorization = `Bearer ${token}`;
 
