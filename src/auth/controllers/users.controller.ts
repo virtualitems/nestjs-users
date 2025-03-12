@@ -28,8 +28,8 @@ import { type CreateUserDTO } from '../data-objects/create-user.dto';
 import { type UpdateUserDTO } from '../data-objects/update-user.dto';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
-import { type UsersService } from '../providers/users.service';
-import { type SessionService } from '../providers/session.service';
+import { UsersService } from '../providers/users.service';
+import { SessionService } from '../providers/session.service';
 
 @Controller('users')
 export class UsersController {

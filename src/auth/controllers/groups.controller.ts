@@ -20,7 +20,7 @@ import {
 import { type PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { type CreateGroupDTO } from '../data-objects/create-group.dto';
 import { type UpdateGroupDTO } from '../data-objects/update-group.dto';
-import { type GroupsService } from '../providers/groups.service';
+import { GroupsService } from '../providers/groups.service';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 
