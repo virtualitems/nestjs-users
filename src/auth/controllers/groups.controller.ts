@@ -82,7 +82,12 @@ export class GroupsController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateGroupDTO): Promise<void> {
-    const data = { ...body, createdAt: new Date() };
+    const data = {
+      ...body,
+      slug: new Date().getTime().toString(36),
+      createdAt: new Date(),
+    };
+
     await this.groupsService.create(this.em, data);
   }
 

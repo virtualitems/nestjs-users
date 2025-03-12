@@ -99,6 +99,7 @@ export class UsersController {
 
     const data = {
       ...body,
+      slug: new Date().getTime().toString(36),
       createdAt: new Date(),
     };
 
