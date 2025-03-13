@@ -209,9 +209,11 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const collection = await user.permissions.init();
+    const collection = await user.permissions.init({
+      fields: ['id', 'slug', 'description'],
+    });
 
-    return { data: Array.from(collection) };
+    return { data: collection.toArray() };
   }
 
   @Get(':id/groups')
@@ -230,8 +232,10 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const collection = await user.groups.init();
+    const collection = await user.groups.load({
+      fields: ['id', 'slug', 'description'],
+    });
 
-    return { data: Array.from(collection) };
+    return { data: collection.toArray() };
   }
 }
