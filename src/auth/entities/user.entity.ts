@@ -7,6 +7,8 @@ import {
 } from '@mikro-orm/core';
 import { UserPermission } from './user-permission.entity';
 import { Permission } from './permission.entity';
+import { Group } from './group.entity';
+import { UserGroup } from './user-group.entity';
 
 @Entity({ tableName: 'auth_users' })
 export class User {
@@ -37,4 +39,11 @@ export class User {
     mappedBy: 'users',
   })
   permissions = new Collection<Permission>(this);
+
+  @ManyToMany({
+    entity: () => Group,
+    pivotEntity: () => UserGroup,
+    mappedBy: 'users',
+  })
+  groups = new Collection<Group>(this);
 }

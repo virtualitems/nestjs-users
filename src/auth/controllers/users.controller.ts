@@ -197,7 +197,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  public async listPermissions(
+  public async permissions(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
     const user = await this.usersService.find(this.em, ['id'], {
@@ -209,8 +209,29 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const permissions = await user.permissions.init();
+    const collection = await user.permissions.init();
 
-    return { data: Array.from(permissions) };
+    return { data: Array.from(collection) };
+  }
+
+  @Get(':id/groups')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async groups(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const user = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (user === null) {
+      throw new NotFoundException();
+    }
+
+    const collection = await user.groups.init();
+
+    return { data: Array.from(collection) };
   }
 }
