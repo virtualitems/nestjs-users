@@ -6,6 +6,7 @@ export enum permissions {
   USERS_UPDATE = 'users.update',
   USERS_DELETE = 'users.delete',
   USERS_RESTORE = 'users.restore',
+  USERS_LOGIN = 'users.login',
   // groups
   GROUPS_LIST = 'groups.list',
   GROUPS_SHOW = 'groups.show',
