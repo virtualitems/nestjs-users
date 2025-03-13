@@ -17,6 +17,7 @@ import { GroupsService } from './providers/groups.service';
 import { JwtStrategy } from './providers/jwt.strategy';
 import { SecurityService } from './providers/security.service';
 import { UsersService } from './providers/users.service';
+import { PermissionsService } from './providers/permissions.service';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { UsersService } from './providers/users.service';
     JwtStrategy,
     SecurityService,
     UsersService,
+    PermissionsService,
   ],
 })
 export class AuthModule {}
