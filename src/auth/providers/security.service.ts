@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import * as bcrypt from 'bcrypt';
 
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -21,6 +21,11 @@ export class SecurityService {
   }
 
   public hash(text: string): string {
-    return createHash('sha256').update(text).digest('hex');
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(text, salt);
+  }
+
+  public compare(text: string, hash: string): boolean {
+    return bcrypt.compareSync(text, hash);
   }
 }

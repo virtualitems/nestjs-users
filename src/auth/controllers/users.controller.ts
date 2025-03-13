@@ -160,15 +160,15 @@ export class UsersController {
     @Body() body: LoginUserDTO,
     @Res() response: ServerResponse,
   ): Promise<void> {
-    const password = this.securityService.hash(body.password);
-
-    const user = await this.usersService.find(this.em, ['id'], {
+    const user = await this.usersService.find(this.em, ['password'], {
       email: body.email,
-      password,
       deletedAt: null,
     });
 
-    if (user === null) {
+    if (
+      user === null ||
+      !this.securityService.compare(body.password, user.password)
+    ) {
       throw new UnauthorizedException();
     }
 
