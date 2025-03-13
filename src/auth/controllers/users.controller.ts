@@ -233,7 +233,8 @@ export class UsersController {
     }
 
     const collection = await user.groups.load({
-      fields: ['id', 'slug', 'description'],
+      fields: ['id', 'slug', 'description', 'permissions'],
+      populate: ['permissions'],
     });
 
     return { data: collection.toArray() };
