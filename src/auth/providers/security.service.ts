@@ -1,4 +1,4 @@
-import * as bcrypt from 'bcrypt';
+import * as bcryptjs from 'bcryptjs';
 
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -21,11 +21,11 @@ export class SecurityService {
   }
 
   public hash(text: string): string {
-    const salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(text, salt);
+    const salt = bcryptjs.genSaltSync(10);
+    return bcryptjs.hashSync(text, salt);
   }
 
   public compare(text: string, hash: string): boolean {
-    return bcrypt.compareSync(text, hash);
+    return bcryptjs.compareSync(text, hash);
   }
 }
