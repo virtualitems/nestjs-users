@@ -5,7 +5,10 @@ export default {
   entitiesTs: ['./src/**/*.entity.ts'],
   dbName: 'db.sqlite3',
   migrations: {
-    path: './migrations',
+    path: './db/migrations',
+  },
+  seeder: {
+    path: './db/seeders',
   },
   driver: SqliteDriver,
   charset: 'UTF-8',
