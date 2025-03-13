@@ -63,13 +63,12 @@ export class UsersController {
       where.email = { $like: `%${q}%` };
     }
 
-    const entities = await this.usersService.list(
-      this.em,
+    const entities = await this.usersService.list(this.em, {
       page,
       limit,
-      ['id', 'email', 'lastLogin'],
+      fields: ['id', 'email', 'lastLogin'],
       where,
-    );
+    });
 
     return { data: entities };
   }
@@ -83,8 +82,10 @@ export class UsersController {
   ): Promise<HttpJsonResponse<object>> {
     const user = await this.usersService.find(
       this.em,
-      ['id', 'email', 'lastLogin'],
       { id, deletedAt: null },
+      {
+        fields: ['id', 'email', 'lastLogin'],
+      },
     );
 
     if (user === null) {
@@ -97,10 +98,16 @@ export class UsersController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateUserDTO): Promise<void> {
-    const existent = await this.usersService.find(this.em, ['id'], {
-      email: body.email,
-      deletedAt: null,
-    });
+    const existent = await this.usersService.find(
+      this.em,
+      {
+        email: body.email,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (existent !== null) {
       throw new BadRequestException('User already exists');
@@ -133,10 +140,16 @@ export class UsersController {
       throw new BadRequestException('No data provided');
     }
 
-    const existent = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const existent = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (existent === null) {
       throw new NotFoundException();
@@ -156,10 +169,16 @@ export class UsersController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id') id: number): Promise<void> {
-    const existent = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const existent = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (existent === null) {
       throw new NotFoundException();
@@ -174,10 +193,16 @@ export class UsersController {
     @Body() body: LoginUserDTO,
     @Res() response: ServerResponse,
   ): Promise<void> {
-    const user = await this.usersService.find(this.em, ['password'], {
-      email: body.email,
-      deletedAt: null,
-    });
+    const user = await this.usersService.find(
+      this.em,
+      {
+        email: body.email,
+        deletedAt: null,
+      },
+      {
+        fields: ['password'],
+      },
+    );
 
     if (
       user === null ||
@@ -207,10 +232,16 @@ export class UsersController {
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const entity = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const entity = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (entity === null) {
       throw new NotFoundException();
@@ -231,17 +262,24 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: SaveUserPermissionsDTO,
   ): Promise<void> {
-    const user = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const user = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (user === null) {
       throw new NotFoundException();
     }
 
-    const permissions = await this.permissionsService.list(this.em, ['id'], {
-      id: { $in: body.permissions },
+    const permissions = await this.permissionsService.list(this.em, {
+      where: { id: { $in: body.permissions } },
+      fields: ['id'],
     });
 
     const collection = await user.permissions.init();
@@ -258,10 +296,16 @@ export class UsersController {
   public async groups(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const entity = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const entity = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (entity === null) {
       throw new NotFoundException();
@@ -283,10 +327,16 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: SaveUserGroupsDTO,
   ): Promise<void> {
-    const user = await this.usersService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const user = await this.usersService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (user === null) {
       throw new NotFoundException();

@@ -52,13 +52,12 @@ export class GroupsController {
       where.description = { $like: `%${q}%` };
     }
 
-    const entities = await this.groupsService.list(
-      this.em,
+    const entities = await this.groupsService.list(this.em, {
       page,
       limit,
-      ['id', 'description'],
+      fields: ['id', 'description'],
       where,
-    );
+    });
 
     return { data: entities };
   }
@@ -72,8 +71,10 @@ export class GroupsController {
   ): Promise<HttpJsonResponse<object>> {
     const entity = await this.groupsService.find(
       this.em,
-      ['id', 'description'],
       { id, deletedAt: null },
+      {
+        fields: ['id', 'description'],
+      },
     );
 
     if (entity === null) {
@@ -113,10 +114,16 @@ export class GroupsController {
       throw new BadRequestException('No data provided');
     }
 
-    const existent = await this.groupsService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const existent = await this.groupsService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (existent === null) {
       throw new NotFoundException();
@@ -130,12 +137,16 @@ export class GroupsController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id', ParseIntPipe) id: number) {
-    const existent = await this.groupsService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
-
-    console.log(existent);
+    const existent = await this.groupsService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (existent === null) {
       throw new NotFoundException();
@@ -151,16 +162,22 @@ export class GroupsController {
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const entity = await this.groupsService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const group = await this.groupsService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
-    if (entity === null) {
+    if (group === null) {
       throw new NotFoundException();
     }
 
-    const collection = await entity.permissions.init({
+    const collection = await group.permissions.init({
       fields: ['id', 'slug', 'description'],
     });
 
@@ -175,17 +192,26 @@ export class GroupsController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: SaveGroupsPermissionsDTO,
   ): Promise<void> {
-    const group = await this.groupsService.find(this.em, ['id'], {
-      id,
-      deletedAt: null,
-    });
+    const group = await this.groupsService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
 
     if (group === null) {
       throw new NotFoundException();
     }
 
-    const permissions = await this.permissionsService.list(this.em, ['id'], {
-      id: { $in: body.permissions },
+    const permissions = await this.permissionsService.list(this.em, {
+      where: {
+        id: { $in: body.permissions },
+      },
+      fields: ['id'],
     });
 
     const collection = await group.permissions.init();

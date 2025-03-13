@@ -6,23 +6,24 @@ import { Permission } from '../entities/permission.entity';
 export class PermissionsService {
   public async list(
     em: EntityManager,
-    fields: (keyof Permission)[],
-    where?: FilterQuery<Permission>,
+    options?: {
+      fields?: (keyof Permission)[];
+      where?: FilterQuery<Permission>;
+    },
   ): Promise<Permission[]> {
-    const entities = await em.findAll(Permission, {
-      fields,
-      where,
-    });
+    const entities = await em.findAll(Permission, options);
 
     return entities;
   }
 
   public async find(
     em: EntityManager,
-    fields: (keyof Permission)[],
     where: FilterQuery<Permission>,
+    options?: {
+      fields: (keyof Permission)[];
+    },
   ): Promise<Permission | null> {
-    const entity = await em.findOne(Permission, where, { fields });
+    const entity = await em.findOne(Permission, where, options);
     return entity;
   }
 }

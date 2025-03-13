@@ -11,37 +11,44 @@ import { User } from '../entities/user.entity';
 export class UsersService {
   public async list(
     em: EntityManager,
-    page: number,
-    limit: number,
-    fields: (keyof User)[],
-    where?: FilterQuery<User>,
+    options?: {
+      page?: number;
+      limit?: number;
+      fields?: (keyof User)[];
+      where?: FilterQuery<User>;
+    },
   ): Promise<Partial<User>[]> {
-    if (page < 1) {
+    if (options === undefined) {
+      return await em.findAll(User, {});
+    }
+
+    if (options.page !== undefined && options.page < 1) {
       throw new Error('Invalid page number');
     }
 
-    if (limit < 1) {
+    if (options.limit !== undefined && options.limit < 1) {
       throw new Error('Invalid limit number');
     }
 
-    const offset = (page - 1) * limit;
+    const { page, ...queryOptions } = options;
 
-    const entities = await em.findAll(User, {
-      fields,
-      offset,
-      limit,
-      where,
-    });
+    if (page !== undefined) {
+      queryOptions['offset'] = (page - 1) * (options.limit ?? 10);
+    }
+
+    const entities = await em.findAll(User, queryOptions);
 
     return entities;
   }
 
   public async find(
     em: EntityManager,
-    fields: (keyof User)[],
     where: FilterQuery<User>,
+    options?: {
+      fields: (keyof User)[];
+    },
   ): Promise<User | null> {
-    const entity = await em.findOne(User, where, { fields });
+    const entity = await em.findOne(User, where, options);
     return entity;
   }
 

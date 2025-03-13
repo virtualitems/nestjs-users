@@ -10,37 +10,44 @@ import { Group } from '../entities/group.entity';
 export class GroupsService {
   public async list(
     em: EntityManager,
-    page: number,
-    limit: number,
-    fields: (keyof Group)[],
-    where?: FilterQuery<Group>,
+    options?: {
+      page?: number;
+      limit?: number;
+      fields?: (keyof Group)[];
+      where?: FilterQuery<Group>;
+    },
   ): Promise<Group[]> {
-    if (page < 1) {
+    if (options === undefined) {
+      return await em.findAll(Group, {});
+    }
+
+    if (options.page !== undefined && options.page < 1) {
       throw new Error('Invalid page number');
     }
 
-    if (limit < 1) {
+    if (options.limit !== undefined && options.limit < 1) {
       throw new Error('Invalid limit number');
     }
 
-    const offset = (page - 1) * limit;
+    const { page, ...queryOptions } = options;
 
-    const entities = await em.findAll(Group, {
-      fields,
-      offset,
-      limit,
-      where,
-    });
+    if (page !== undefined) {
+      queryOptions['offset'] = (page - 1) * (options.limit ?? 10);
+    }
+
+    const entities = await em.findAll(Group, queryOptions);
 
     return entities;
   }
 
   public async find(
     em: EntityManager,
-    fields: (keyof Group)[],
     where: FilterQuery<Group>,
+    options?: {
+      fields: (keyof Group)[];
+    },
   ): Promise<Group | null> {
-    const entity = await em.findOne(Group, where, { fields });
+    const entity = await em.findOne(Group, where, options);
     return entity;
   }
 
