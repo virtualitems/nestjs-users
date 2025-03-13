@@ -232,7 +232,7 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const collection = await entity.groups.load({
+    const collection = await entity.groups.init({
       fields: ['id', 'slug', 'description', 'permissions'],
       populate: ['permissions'],
     });

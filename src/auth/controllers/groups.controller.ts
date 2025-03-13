@@ -140,4 +140,27 @@ export class GroupsController {
 
     await this.groupsService.remove(this.em, { id });
   }
+
+  @Get(':id/permissions')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async permissions(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const entity = await this.groupsService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (entity === null) {
+      throw new NotFoundException();
+    }
+
+    const collection = await entity.permissions.init({
+      fields: ['id', 'slug', 'description'],
+    });
+
+    return { data: collection.toArray() };
+  }
 }
