@@ -1,4 +1,12 @@
-import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
+import {
+  Collection,
+  Entity,
+  ManyToMany,
+  PrimaryKey,
+  Property,
+} from '@mikro-orm/core';
+import { UserPermission } from './user-permission.entity';
+import { Permission } from './permission.entity';
 
 @Entity({ tableName: 'auth_users' })
 export class User {
@@ -22,4 +30,11 @@ export class User {
 
   @Property({ fieldName: 'deleted_at', nullable: true, index: true })
   deletedAt?: Date | null;
+
+  @ManyToMany({
+    entity: () => Permission,
+    pivotEntity: () => UserPermission,
+    mappedBy: 'users',
+  })
+  permissions = new Collection<Permission>(this);
 }

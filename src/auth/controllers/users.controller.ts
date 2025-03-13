@@ -192,4 +192,25 @@ export class UsersController {
     response.setHeader('Authorization', authorization);
     response.end();
   }
+
+  @Get(':id/permissions')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async listPermissions(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const user = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (user === null) {
+      throw new NotFoundException();
+    }
+
+    const permissions = await user.permissions.init();
+
+    return { data: Array.from(permissions) };
+  }
 }
