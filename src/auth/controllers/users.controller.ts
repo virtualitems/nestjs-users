@@ -32,11 +32,14 @@ import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
 import { SecurityService } from '../providers/security.service';
 import { User } from '../entities/user.entity';
+import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dto';
+import { PermissionsService } from '../providers/permissions.service';
 
 @Controller('users')
 export class UsersController {
   constructor(
     protected readonly usersService: UsersService,
+    protected readonly permissionsService: PermissionsService,
     protected readonly securityService: SecurityService,
     protected readonly em: EntityManager,
   ) {}
@@ -214,6 +217,31 @@ export class UsersController {
     });
 
     return { data: collection.toArray() };
+  }
+
+  @Post(':id/permissions')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async savePermissions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: SaveUserPermissionsDTO,
+  ): Promise<void> {
+    const entity = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (entity === null) {
+      throw new NotFoundException();
+    }
+
+    const permissions = await this.permissionsService.list(this.em, ['id'], {
+      id: { $in: body.permissions },
+    });
+
+    entity.permissions.set(permissions);
+    await this.em.persistAndFlush(entity);
   }
 
   @Get(':id/groups')
