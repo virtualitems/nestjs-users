@@ -30,6 +30,7 @@ export class Group {
   @ManyToMany({
     entity: () => User,
     pivotEntity: () => UserGroup,
+    mappedBy: 'groups',
   })
   users = new Collection<User>(this);
 

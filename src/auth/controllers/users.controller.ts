@@ -34,12 +34,16 @@ import { SecurityService } from '../providers/security.service';
 import { User } from '../entities/user.entity';
 import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dto';
 import { PermissionsService } from '../providers/permissions.service';
+import { GroupsService } from '../providers/groups.service';
+import { SaveUserGroupsDTO } from '../data-objects/save-user-groups.dto';
+import { Group } from '../entities/group.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(
     protected readonly usersService: UsersService,
     protected readonly permissionsService: PermissionsService,
+    protected readonly groupsService: GroupsService,
     protected readonly securityService: SecurityService,
     protected readonly em: EntityManager,
   ) {}
@@ -227,12 +231,12 @@ export class UsersController {
     @Param('id', ParseIntPipe) id: number,
     @Body() body: SaveUserPermissionsDTO,
   ): Promise<void> {
-    const entity = await this.usersService.find(this.em, ['id'], {
+    const user = await this.usersService.find(this.em, ['id'], {
       id,
       deletedAt: null,
     });
 
-    if (entity === null) {
+    if (user === null) {
       throw new NotFoundException();
     }
 
@@ -240,8 +244,11 @@ export class UsersController {
       id: { $in: body.permissions },
     });
 
-    entity.permissions.set(permissions);
-    await this.em.persistAndFlush(entity);
+    const collection = await user.permissions.init();
+
+    collection.set(permissions);
+
+    await this.em.persistAndFlush(user);
   }
 
   @Get(':id/groups')
@@ -266,5 +273,33 @@ export class UsersController {
     });
 
     return { data: collection.toArray() };
+  }
+
+  @Post(':id/groups')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async saveGroups(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: SaveUserGroupsDTO,
+  ): Promise<void> {
+    const user = await this.usersService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (user === null) {
+      throw new NotFoundException();
+    }
+
+    const groups = await this.em.find(Group, {
+      id: { $in: body.groups },
+    });
+
+    const collection = await user.groups.init();
+
+    collection.set(groups);
+
+    await this.em.persistAndFlush(user);
   }
 }
