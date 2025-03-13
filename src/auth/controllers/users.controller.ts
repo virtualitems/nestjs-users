@@ -1,4 +1,5 @@
 import { type ServerResponse } from 'node:http';
+import * as crypto from 'node:crypto';
 
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import {
@@ -98,8 +99,14 @@ export class UsersController {
       throw new BadRequestException('User already exists');
     }
 
+    const time = new Date().getTime();
+
     const data = {
       ...body,
+      slug: crypto
+        .createHash('md5')
+        .update(body.email + time)
+        .digest('hex'),
       password: this.securityService.hash(body.password),
       createdAt: new Date(),
     };

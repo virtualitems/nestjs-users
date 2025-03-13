@@ -5,6 +5,9 @@ export class User {
   @PrimaryKey({ fieldName: 'id' })
   id?: number;
 
+  @Property({ fieldName: 'slug', unique: true })
+  slug!: string;
+
   @Property({ fieldName: 'email', index: true })
   email!: string;
 

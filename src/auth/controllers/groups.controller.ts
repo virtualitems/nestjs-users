@@ -1,3 +1,5 @@
+import * as crypto from 'node:crypto';
+
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import {
   BadRequestException,
@@ -83,8 +85,13 @@ export class GroupsController {
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateGroupDTO): Promise<void> {
+    const time = new Date().getTime();
     const data = {
       ...body,
+      slug: crypto
+        .createHash('md5')
+        .update(body.description + time)
+        .digest('hex'),
       createdAt: new Date(),
     };
 
