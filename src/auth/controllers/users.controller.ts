@@ -200,16 +200,16 @@ export class UsersController {
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const user = await this.usersService.find(this.em, ['id'], {
+    const entity = await this.usersService.find(this.em, ['id'], {
       id,
       deletedAt: null,
     });
 
-    if (user === null) {
+    if (entity === null) {
       throw new NotFoundException();
     }
 
-    const collection = await user.permissions.init({
+    const collection = await entity.permissions.init({
       fields: ['id', 'slug', 'description'],
     });
 
@@ -223,16 +223,16 @@ export class UsersController {
   public async groups(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const user = await this.usersService.find(this.em, ['id'], {
+    const entity = await this.usersService.find(this.em, ['id'], {
       id,
       deletedAt: null,
     });
 
-    if (user === null) {
+    if (entity === null) {
       throw new NotFoundException();
     }
 
-    const collection = await user.groups.load({
+    const collection = await entity.groups.load({
       fields: ['id', 'slug', 'description', 'permissions'],
       populate: ['permissions'],
     });
