@@ -26,11 +26,14 @@ import { GroupsService } from '../providers/groups.service';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { Group } from '../entities/group.entity';
+import { PermissionsService } from '../providers/permissions.service';
+import { SaveGroupsPermissionsDTO } from '../data-objects/save-groups-permissions.dto';
 
 @Controller('groups')
 export class GroupsController {
   constructor(
     protected readonly groupsService: GroupsService,
+    protected readonly permissionsService: PermissionsService,
     protected readonly em: EntityManager,
   ) {}
 
@@ -162,5 +165,33 @@ export class GroupsController {
     });
 
     return { data: collection.toArray() };
+  }
+
+  @Post(':id/permissions')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async savePermissions(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: SaveGroupsPermissionsDTO,
+  ): Promise<void> {
+    const group = await this.groupsService.find(this.em, ['id'], {
+      id,
+      deletedAt: null,
+    });
+
+    if (group === null) {
+      throw new NotFoundException();
+    }
+
+    const permissions = await this.permissionsService.list(this.em, ['id'], {
+      id: { $in: body.permissions },
+    });
+
+    const collection = await group.permissions.init();
+
+    collection.set(permissions);
+
+    await this.em.persistAndFlush(group);
   }
 }
