@@ -37,6 +37,7 @@ import { PermissionsService } from '../providers/permissions.service';
 import { GroupsService } from '../providers/groups.service';
 import { SaveUserGroupsDTO } from '../data-objects/save-user-groups.dto';
 import { Group } from '../entities/group.entity';
+import { JwtPayload } from '../interfaces/jwt.interface';
 
 @Controller('users')
 export class UsersController {
@@ -217,7 +218,21 @@ export class UsersController {
       { id: user.id },
     );
 
-    const token = this.securityService.generateToken({ sub: user.id });
+    const permissions = await user.permissions.init({
+      fields: ['id'],
+    });
+
+    const groups = await user.groups.init({
+      fields: ['id'],
+    });
+
+    const payload: JwtPayload = {
+      sub: user.id,
+      pms: permissions.map((item) => item.id),
+      ugs: groups.map((item) => item.id),
+    };
+
+    const token = this.securityService.generateToken(payload);
 
     const authorization = `Bearer ${token}`;
 
