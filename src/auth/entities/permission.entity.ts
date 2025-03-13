@@ -24,12 +24,14 @@ export class Permission {
   @ManyToMany({
     entity: () => User,
     pivotEntity: () => UserPermission,
+    mappedBy: 'permissions',
   })
   users = new Collection<User>(this);
 
   @ManyToMany({
     entity: () => Group,
     pivotEntity: () => GroupPermission,
+    mappedBy: 'permissions',
   })
   groups = new Collection<Group>(this);
 }

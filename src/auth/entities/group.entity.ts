@@ -37,7 +37,6 @@ export class Group {
   @ManyToMany({
     entity: () => Permission,
     pivotEntity: () => GroupPermission,
-    mappedBy: 'groups',
   })
   permissions = new Collection<Permission>(this);
 }
