@@ -23,11 +23,12 @@ import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { CreateGroupDTO } from '../data-objects/create-group.dto';
 import { UpdateGroupDTO } from '../data-objects/update-group.dto';
 import { GroupsService } from '../providers/groups.service';
-import { JwtAuthGuard } from '../guards/jwt.guard';
+import { JwtAuthGuard, Permissions } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { Group } from '../entities/group.entity';
 import { PermissionsService } from '../providers/permissions.service';
 import { SaveGroupsPermissionsDTO } from '../data-objects/save-groups-permissions.dto';
+import { permissions } from '../constants/permissions';
 
 @Controller('groups')
 export class GroupsController {
@@ -38,6 +39,7 @@ export class GroupsController {
   ) {}
 
   @Get()
+  @Permissions(permissions.GROUPS_LIST)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -63,6 +65,7 @@ export class GroupsController {
   }
 
   @Get(':id')
+  @Permissions(permissions.GROUPS_SHOW)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -85,6 +88,7 @@ export class GroupsController {
   }
 
   @Post()
+  @Permissions(permissions.GROUPS_CREATE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
@@ -103,6 +107,7 @@ export class GroupsController {
   }
 
   @Put(':id')
+  @Permissions(permissions.GROUPS_LIST)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -133,6 +138,7 @@ export class GroupsController {
   }
 
   @Delete(':id')
+  @Permissions(permissions.GROUPS_DELETE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -156,6 +162,7 @@ export class GroupsController {
   }
 
   @Get(':id/permissions')
+  @Permissions(permissions.GROUPS_GET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -185,6 +192,7 @@ export class GroupsController {
   }
 
   @Post(':id/permissions')
+  @Permissions(permissions.GROUPS_SET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)

@@ -81,6 +81,7 @@ export class UsersController {
   }
 
   @Get(':id')
+  @Permissions(permissions.USERS_SHOW)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -136,6 +137,7 @@ export class UsersController {
   }
 
   @Put(':id')
+  @Permissions(permissions.USERS_UPDATE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -172,6 +174,7 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @Permissions(permissions.USERS_DELETE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -195,6 +198,7 @@ export class UsersController {
   }
 
   @Post('login')
+  @Permissions(permissions.USERS_LOGIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
     @Body() body: LoginUserDTO,
@@ -247,6 +251,7 @@ export class UsersController {
   }
 
   @Get(':id/permissions')
+  @Permissions(permissions.USERS_GET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -276,6 +281,7 @@ export class UsersController {
   }
 
   @Post(':id/permissions')
+  @Permissions(permissions.USERS_SET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -311,6 +317,7 @@ export class UsersController {
   }
 
   @Get(':id/groups')
+  @Permissions(permissions.USERS_GET_GROUPS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -341,6 +348,7 @@ export class UsersController {
   }
 
   @Post(':id/groups')
+  @Permissions(permissions.USERS_SET_GROUPS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
