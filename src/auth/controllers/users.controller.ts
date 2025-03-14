@@ -27,7 +27,11 @@ import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { LoginUserDTO } from '../data-objects/login-user.dto';
 import { CreateUserDTO } from '../data-objects/create-user.dto';
 import { UpdateUserDTO } from '../data-objects/update-user.dto';
-import { JwtAuthGuard } from '../guards/jwt.guard';
+import {
+  JwtAuthGuard,
+  Permissions,
+  PermissionsGuard,
+} from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
 import { SecurityService } from '../providers/security.service';
@@ -38,6 +42,7 @@ import { GroupsService } from '../providers/groups.service';
 import { SaveUserGroupsDTO } from '../data-objects/save-user-groups.dto';
 import { Group } from '../entities/group.entity';
 import { JwtPayload } from '../interfaces/jwt.interface';
+import { permissions } from '../constants/permissions';
 
 @Controller('users')
 export class UsersController {
@@ -50,7 +55,8 @@ export class UsersController {
   ) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @Permissions(permissions.USERS_LIST)
+  @UseGuards(JwtAuthGuard, PermissionsGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(

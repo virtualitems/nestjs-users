@@ -18,6 +18,7 @@ import { JwtStrategy } from './providers/jwt.strategy';
 import { SecurityService } from './providers/security.service';
 import { UsersService } from './providers/users.service';
 import { PermissionsService } from './providers/permissions.service';
+import { PermissionsGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { PermissionsService } from './providers/permissions.service';
     SecurityService,
     UsersService,
     PermissionsService,
+    PermissionsGuard,
   ],
 })
 export class AuthModule {}

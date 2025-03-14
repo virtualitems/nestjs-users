@@ -17,6 +17,10 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: JwtPayload): JwtPayload {
+    if (payload.sub === undefined) {
+      throw new Error('Invalid payload');
+    }
+
     return payload;
   }
 }
