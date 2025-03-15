@@ -7,10 +7,11 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     ignores: [
+      '.ignore',
+      'db',
+      'dist',
       'eslint.config.mjs',
       'node_modules',
-      'dist',
-      '.ignore',
     ],
   },
   eslint.configs.recommended,
