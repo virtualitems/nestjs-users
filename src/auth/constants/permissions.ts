@@ -22,4 +22,11 @@ export enum permissions {
   GROUPS_SET_PERMISSIONS = 'groups.setPermissions',
   // permissions
   PERMISSIONS_LIST = 'permissions.list',
+  // persons
+  PERSONS_LIST = 'persons.list',
+  PERSONS_SHOW = 'persons.show',
+  PERSONS_CREATE = 'persons.create',
+  PERSONS_UPDATE = 'persons.update',
+  PERSONS_DELETE = 'persons.delete',
+  PERSONS_RESTORE = 'persons.restore',
 }
