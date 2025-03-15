@@ -237,8 +237,8 @@ export class UsersController {
 
     const payload: JwtPayload = {
       sub: user.id,
-      pms: permissions.map((item) => item.id),
-      ugs: groups.map((item) => item.id),
+      pms: permissions.map((item) => item.id!),
+      ugs: groups.map((item) => item.id!),
     };
 
     const token = this.securityService.generateToken(payload);
