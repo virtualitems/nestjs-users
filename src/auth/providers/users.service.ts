@@ -38,6 +38,8 @@ export class UsersService {
 
     const entities = await em.findAll(User, queryOptions);
 
+    em.clear();
+
     return entities;
   }
 
@@ -49,6 +51,9 @@ export class UsersService {
     },
   ): Promise<User | null> {
     const entity = await em.findOne(User, where, options);
+
+    em.clear();
+
     return entity;
   }
 

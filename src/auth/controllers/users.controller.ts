@@ -40,7 +40,6 @@ import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dt
 import { PermissionsService } from '../providers/permissions.service';
 import { GroupsService } from '../providers/groups.service';
 import { SaveUserGroupsDTO } from '../data-objects/save-user-groups.dto';
-import { Group } from '../entities/group.entity';
 import { JwtPayload } from '../interfaces/jwt.interface';
 import { permissions } from '../constants/permissions';
 
@@ -371,8 +370,9 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const groups = await this.em.find(Group, {
-      id: { $in: body.groups },
+    const groups = await this.groupsService.list(this.em, {
+      fields: ['id', 'slug', 'description'],
+      where: { id: { $in: body.groups } },
     });
 
     const collection = await user.groups.init();

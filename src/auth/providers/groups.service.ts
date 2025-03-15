@@ -37,6 +37,8 @@ export class GroupsService {
 
     const entities = await em.findAll(Group, queryOptions);
 
+    em.clear();
+
     return entities;
   }
 
@@ -48,6 +50,9 @@ export class GroupsService {
     },
   ): Promise<Group | null> {
     const entity = await em.findOne(Group, where, options);
+
+    em.clear();
+
     return entity;
   }
 
