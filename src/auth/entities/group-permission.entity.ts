@@ -11,6 +11,6 @@ export class GroupPermission {
   @ManyToOne({ fieldName: 'group_id', entity: () => Group })
   group!: Group;
 
-  @ManyToOne({ fieldName: 'group_id', entity: () => Permission })
+  @ManyToOne({ fieldName: 'permission_id', entity: () => Permission })
   permission!: Permission;
 }
