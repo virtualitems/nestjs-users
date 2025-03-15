@@ -13,7 +13,7 @@ import { GroupPermission } from './group-permission.entity';
 @Entity({ tableName: 'auth_permissions' })
 export class Permission {
   @PrimaryKey({ fieldName: 'id' })
-  id!: number;
+  id?: number;
 
   @Property({ fieldName: 'slug', unique: true })
   slug!: string;
