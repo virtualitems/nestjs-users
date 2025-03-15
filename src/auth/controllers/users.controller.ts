@@ -132,7 +132,29 @@ export class UsersController {
       createdAt: new Date(),
     };
 
-    await this.usersService.create(this.em, data);
+    await this.em.transactional(async (em: EntityManager) => {
+      try {
+        const user = await this.usersService.create(em, data);
+        const perms = await this.permissionsService.list(em, {
+          where: {
+            slug: {
+              $in: [
+                permissions.USERS_LOGIN,
+                permissions.USERS_CREATE,
+                permissions.USERS_GET_PERMISSIONS,
+                permissions.USERS_SET_PERMISSIONS,
+              ],
+            },
+          },
+        });
+        user.permissions.set(perms);
+        await em.persist(user).flush();
+        await em.commit();
+      } catch (error) {
+        console.error(error);
+        await em.rollback();
+      }
+    });
   }
 
   @Put(':id')
