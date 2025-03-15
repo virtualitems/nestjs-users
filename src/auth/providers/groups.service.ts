@@ -56,9 +56,13 @@ export class GroupsService {
     return entity;
   }
 
-  public async create(em: EntityManager, data: RequiredEntityData<Group>) {
+  public async create(
+    em: EntityManager,
+    data: RequiredEntityData<Group>,
+  ): Promise<Group> {
     const entity = em.create(Group, data);
     await em.persist(entity).flush();
+    return entity;
   }
 
   public async update(

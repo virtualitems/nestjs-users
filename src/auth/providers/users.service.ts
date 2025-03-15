@@ -60,9 +60,10 @@ export class UsersService {
   public async create(
     em: EntityManager,
     data: RequiredEntityData<User>,
-  ): Promise<void> {
+  ): Promise<User> {
     const entity = em.create(User, data);
     await em.persist(entity).flush();
+    return entity;
   }
 
   public async update(

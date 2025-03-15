@@ -56,9 +56,13 @@ export class PersonsService {
     return entity;
   }
 
-  public async create(em: EntityManager, data: RequiredEntityData<Person>) {
+  public async create(
+    em: EntityManager,
+    data: RequiredEntityData<Person>,
+  ): Promise<Person> {
     const entity = em.create(Person, data);
     await em.persist(entity).flush();
+    return entity;
   }
 
   public async update(
