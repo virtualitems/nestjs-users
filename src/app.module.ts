@@ -5,6 +5,7 @@ import { JwtModule } from '@nestjs/jwt';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { AuthPersonsModule } from './auth-persons/auth-persons.module';
 import mikroOrmConfig from './mikro-orm.config';
 
 @Module({
@@ -22,6 +23,7 @@ import mikroOrmConfig from './mikro-orm.config';
         signOptions: { expiresIn: configService.getOrThrow('JWT_EXPIRES_IN') },
       }),
     }),
+    AuthPersonsModule,
   ],
   controllers: [AppController],
   providers: [ConfigService],

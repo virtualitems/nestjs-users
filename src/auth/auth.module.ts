@@ -54,5 +54,6 @@ import { PermissionsController } from './controllers/permissions.controller';
     SecurityService,
     UsersService,
   ],
+  exports: [UsersService, GroupsService, PermissionsService],
 })
 export class AuthModule {}

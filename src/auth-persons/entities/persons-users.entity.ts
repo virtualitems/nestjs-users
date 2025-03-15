@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey } from '@mikro-orm/core';
-import { User } from 'src/auth/entities/user.entity';
-import { Person } from 'src/persons/entities/person.entity';
+import { User } from '../../auth/entities/user.entity';
+import { Person } from '../../persons/entities/person.entity';
 
 @Entity({ tableName: 'persons_persons_users' })
 export class PersonUser {
