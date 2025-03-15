@@ -19,6 +19,7 @@ import { SecurityService } from './providers/security.service';
 import { UsersService } from './providers/users.service';
 import { PermissionsService } from './providers/permissions.service';
 import { PermissionsGuard } from './guards/jwt.guard';
+import { PermissionsController } from './controllers/permissions.controller';
 
 @Module({
   imports: [
@@ -42,16 +43,16 @@ import { PermissionsGuard } from './guards/jwt.guard';
       ],
     }),
   ],
-  controllers: [UsersController, GroupsController],
+  controllers: [UsersController, GroupsController, PermissionsController],
   providers: [
     ConfigService,
     GroupsService,
     JwtService,
     JwtStrategy,
+    PermissionsGuard,
+    PermissionsService,
     SecurityService,
     UsersService,
-    PermissionsService,
-    PermissionsGuard,
   ],
 })
 export class AuthModule {}

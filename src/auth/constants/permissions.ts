@@ -20,4 +20,6 @@ export enum permissions {
   GROUPS_RESTORE = 'groups.restore',
   GROUPS_GET_PERMISSIONS = 'groups.getPermissions',
   GROUPS_SET_PERMISSIONS = 'groups.setPermissions',
+  // permissions
+  PERMISSIONS_LIST = 'permissions.list',
 }
