@@ -4,17 +4,17 @@
 mindmap
     root((app))
         auth
-            userGroups
-                config
-                jwt
-                mikro
-            users
-                config
-                jwt
-                mikro
-        config
-        jwt
-        mikro
+            config
+            jwt
+            mikro
         persons
-            users
+            config
+            jwt
+            mikro
+        auth-persons
+            auth
+            persons
+            config
+            jwt
+            mikro
 ```

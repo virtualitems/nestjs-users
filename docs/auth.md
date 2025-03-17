@@ -17,12 +17,6 @@ erDiagram
         name STRING
     }
 
-    auth_sessions {
-        session_key STRING PK
-        session_data STRING
-        expire_date DATE
-    }
-
     auth_permissions {
         id NUMBER PK
         codename STRING
