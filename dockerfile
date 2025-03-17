@@ -2,7 +2,7 @@
 
 FROM node:22-alpine AS build
 
-WORKDIR /app
+WORKDIR /home/app
 
 COPY package.json ./
 COPY package-lock.json ./
@@ -11,6 +11,7 @@ COPY tsconfig.json ./
 COPY tsconfig.build.json ./
 
 COPY ./src ./src
+COPY ./db ./db
 
 RUN npm install
 
@@ -22,19 +23,19 @@ RUN npm run db:migration:up
 
 FROM node:22-alpine AS production
 
-WORKDIR /app
+WORKDIR /home/app
 
 COPY package.json ./
 COPY package-lock.json ./
 
 RUN npm install --only=production
 
-COPY --from=build /app/dist ./dist
+COPY --from=build /home/app/dist ./dist
 
-COPY --from=build /app/db.sqlite3 .
+COPY --from=build /home/app/db.sqlite3 .
 
 COPY .env .env
 
 EXPOSE 3000
 
-CMD ["node", "./dist/main.js"]
+CMD ["node", "./dist/src/main.js"]
