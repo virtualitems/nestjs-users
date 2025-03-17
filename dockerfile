@@ -36,6 +36,6 @@ COPY --from=build /home/app/db.sqlite3 .
 
 COPY .env .env
 
-EXPOSE 3000
+EXPOSE 80
 
 CMD ["node", "./dist/src/main.js"]
