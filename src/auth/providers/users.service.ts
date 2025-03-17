@@ -1,3 +1,4 @@
+import { LockMode } from '@mikro-orm/core';
 import {
   RequiredEntityData,
   EntityManager,
@@ -7,8 +8,19 @@ import { Injectable } from '@nestjs/common';
 
 import { User } from '../entities/user.entity';
 
+/**
+ * Service to manage user-related operations.
+ */
 @Injectable()
 export class UsersService {
+  /**
+   * Lists users with optional pagination and filtering.
+   *
+   * @param em - The entity manager to use for database operations.
+   * @param options - Optional parameters for pagination, field selection, and filtering.
+   * @returns A promise that resolves to an array of partial user entities.
+   * @throws Error if the page or limit number is invalid.
+   */
   public async list(
     em: EntityManager,
     options?: {
@@ -36,6 +48,8 @@ export class UsersService {
       queryOptions['offset'] = (page - 1) * (options.limit ?? 10);
     }
 
+    queryOptions['lockMode'] = LockMode.PESSIMISTIC_READ;
+
     const entities = await em.findAll(User, queryOptions);
 
     em.clear();
@@ -43,6 +57,14 @@ export class UsersService {
     return entities;
   }
 
+  /**
+   * Finds a single user based on the provided criteria.
+   *
+   * @param em - The entity manager to use for database operations.
+   * @param where - The criteria to find the user.
+   * @param options - Optional parameters for field selection.
+   * @returns A promise that resolves to the found user entity or null if not found.
+   */
   public async find(
     em: EntityManager,
     where: FilterQuery<User>,
@@ -50,6 +72,10 @@ export class UsersService {
       fields: (keyof User)[];
     },
   ): Promise<User | null> {
+    if (options !== undefined) {
+      options['lockMode'] = LockMode.PESSIMISTIC_READ;
+    }
+
     const entity = await em.findOne(User, where, options);
 
     em.clear();
@@ -57,6 +83,13 @@ export class UsersService {
     return entity;
   }
 
+  /**
+   * Creates a new user entity.
+   *
+   * @param em - The entity manager to use for database operations.
+   * @param data - The data to create the user entity.
+   * @returns A promise that resolves to the created user entity.
+   */
   public async create(
     em: EntityManager,
     data: RequiredEntityData<User>,
@@ -66,6 +99,14 @@ export class UsersService {
     return entity;
   }
 
+  /**
+   * Updates existing user entities based on the provided criteria.
+   *
+   * @param em - The entity manager to use for database operations.
+   * @param data - The data to update the user entities.
+   * @param where - The criteria to find the user entities to update.
+   * @returns A promise that resolves when the update operation is complete.
+   */
   public async update(
     em: EntityManager,
     data: Partial<User>,
@@ -80,6 +121,13 @@ export class UsersService {
     await em.flush();
   }
 
+  /**
+   * Soft deletes user entities based on the provided criteria.
+   *
+   * @param em - The entity manager to use for database operations.
+   * @param where - The criteria to find the user entities to delete.
+   * @returns A promise that resolves when the delete operation is complete.
+   */
   public async remove(
     em: EntityManager,
     where: FilterQuery<User>,
