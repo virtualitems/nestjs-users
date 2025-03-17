@@ -16,7 +16,6 @@ RUN npm install
 
 RUN npm run build
 
-RUN npm run db:migration:create
 RUN npm run db:migration:up
 
 # Production stage
