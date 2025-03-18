@@ -23,6 +23,11 @@ RUN npm run db:migration:up
 
 FROM node:22-alpine AS production
 
+LABEL maintainer="Alejandro CR <contacto@alejandrocr.co>"
+LABEL version="1.0"
+LABEL name="nestjs-users-api"
+LABEL description="API REST for users management"
+
 WORKDIR /home/app
 
 COPY package.json ./
