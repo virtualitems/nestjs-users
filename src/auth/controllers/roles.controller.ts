@@ -20,26 +20,26 @@ import {
 } from '@nestjs/common';
 
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
-import { CreateGroupDTO } from '../data-objects/create-group.dto';
-import { UpdateGroupDTO } from '../data-objects/update-group.dto';
-import { GroupsService } from '../providers/groups.service';
+import { CreateRoleDTO } from '../data-objects/create-role.dto';
+import { UpdateRoleDTO } from '../data-objects/update-role.dto';
+import { RolesService } from '../providers/roles.service';
 import { JwtAuthGuard, Permissions } from '../guards/jwt.guard';
 import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
-import { Group } from '../entities/group.entity';
+import { Role } from '../entities/role.entity';
 import { PermissionsService } from '../providers/permissions.service';
-import { SaveGroupsPermissionsDTO } from '../data-objects/save-groups-permissions.dto';
+import { SaveRolesPermissionsDTO } from '../data-objects/save-roles-permissions.dto';
 import { permissions } from '../constants/permissions';
 
-@Controller('groups')
-export class GroupsController {
+@Controller('roles')
+export class RolesController {
   constructor(
-    protected readonly groupsService: GroupsService,
+    protected readonly rolesService: RolesService,
     protected readonly permissionsService: PermissionsService,
     protected readonly em: EntityManager,
   ) {}
 
   @Get()
-  @Permissions(permissions.GROUPS_LIST)
+  @Permissions(permissions.ROLES_LIST)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
@@ -48,13 +48,13 @@ export class GroupsController {
   ): Promise<HttpJsonResponse<object[]>> {
     const { page = 1, limit = 10, q } = query;
 
-    const where: FilterQuery<Group> = { deletedAt: null };
+    const where: FilterQuery<Role> = { deletedAt: null };
 
     if (q !== undefined) {
       where.description = { $like: `%${q}%` };
     }
 
-    const entities = await this.groupsService.list(this.em, {
+    const entities = await this.rolesService.list(this.em, {
       page,
       limit,
       fields: ['id', 'description'],
@@ -65,14 +65,14 @@ export class GroupsController {
   }
 
   @Get(':id')
-  @Permissions(permissions.GROUPS_SHOW)
+  @Permissions(permissions.ROLES_SHOW)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object>> {
-    const entity = await this.groupsService.find(
+    const entity = await this.rolesService.find(
       this.em,
       { id, deletedAt: null },
       {
@@ -88,11 +88,11 @@ export class GroupsController {
   }
 
   @Post()
-  @Permissions(permissions.GROUPS_CREATE)
+  @Permissions(permissions.ROLES_CREATE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
-  public async create(@Body() body: CreateGroupDTO): Promise<void> {
+  public async create(@Body() body: CreateRoleDTO): Promise<void> {
     const time = new Date().getTime();
     const data = {
       ...body,
@@ -103,23 +103,23 @@ export class GroupsController {
       createdAt: new Date(),
     };
 
-    await this.groupsService.create(this.em, data);
+    await this.rolesService.create(this.em, data);
   }
 
   @Put(':id')
-  @Permissions(permissions.GROUPS_LIST)
+  @Permissions(permissions.ROLES_LIST)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: UpdateGroupDTO,
+    @Body() body: UpdateRoleDTO,
   ): Promise<void> {
     if (Object.keys(body).length === 0) {
       throw new BadRequestException('No data provided');
     }
 
-    const existent = await this.groupsService.find(
+    const existent = await this.rolesService.find(
       this.em,
       {
         id,
@@ -134,16 +134,16 @@ export class GroupsController {
       throw new NotFoundException();
     }
 
-    await this.groupsService.update(this.em, body, { id });
+    await this.rolesService.update(this.em, body, { id });
   }
 
   @Delete(':id')
-  @Permissions(permissions.GROUPS_DELETE)
+  @Permissions(permissions.ROLES_DELETE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id', ParseIntPipe) id: number) {
-    const existent = await this.groupsService.find(
+    const existent = await this.rolesService.find(
       this.em,
       {
         id,
@@ -158,18 +158,18 @@ export class GroupsController {
       throw new NotFoundException();
     }
 
-    await this.groupsService.remove(this.em, { id });
+    await this.rolesService.remove(this.em, { id });
   }
 
   @Get(':id/permissions')
-  @Permissions(permissions.GROUPS_GET_PERMISSIONS)
+  @Permissions(permissions.ROLES_GET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
-    const group = await this.groupsService.find(
+    const role = await this.rolesService.find(
       this.em,
       {
         id,
@@ -180,11 +180,11 @@ export class GroupsController {
       },
     );
 
-    if (group === null) {
+    if (role === null) {
       throw new NotFoundException();
     }
 
-    const collection = await group.permissions.init({
+    const collection = await role.permissions.init({
       fields: ['id', 'slug', 'description'],
     });
 
@@ -192,15 +192,15 @@ export class GroupsController {
   }
 
   @Post(':id/permissions')
-  @Permissions(permissions.GROUPS_SET_PERMISSIONS)
+  @Permissions(permissions.ROLES_SET_PERMISSIONS)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async savePermissions(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: SaveGroupsPermissionsDTO,
+    @Body() body: SaveRolesPermissionsDTO,
   ): Promise<void> {
-    const group = await this.groupsService.find(
+    const role = await this.rolesService.find(
       this.em,
       {
         id,
@@ -211,7 +211,7 @@ export class GroupsController {
       },
     );
 
-    if (group === null) {
+    if (role === null) {
       throw new NotFoundException();
     }
 
@@ -222,10 +222,10 @@ export class GroupsController {
       fields: ['id'],
     });
 
-    const collection = await group.permissions.init();
+    const collection = await role.permissions.init();
 
     collection.set(permissions);
 
-    await this.em.persistAndFlush(group);
+    await this.em.persistAndFlush(role);
   }
 }

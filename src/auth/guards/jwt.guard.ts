@@ -60,13 +60,13 @@ export class PermissionsGuard implements CanActivate {
       permsSet.add(perm.slug);
     });
 
-    const userGroups = await user.groups.init({
+    const userRoles = await user.roles.init({
       fields: ['permissions'],
       populate: ['permissions'],
     });
 
-    userGroups.getItems().forEach((group) => {
-      group.permissions.getItems().forEach((perm) => {
+    userRoles.getItems().forEach((role) => {
+      role.permissions.getItems().forEach((perm) => {
         permsSet.add(perm.slug);
       });
     });

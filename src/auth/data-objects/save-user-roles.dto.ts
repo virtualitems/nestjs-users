@@ -1,7 +1,7 @@
 import { IsArray, IsNumber } from 'class-validator';
 
-export class SaveUserGroupsDTO {
+export class SaveUserRolesDTO {
   @IsArray()
   @IsNumber({}, { each: true })
-  groups: number[];
+  roles: number[];
 }

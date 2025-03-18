@@ -9,17 +9,17 @@ export enum permissions {
   USERS_LOGIN = 'users.login',
   USERS_GET_PERMISSIONS = 'users.getPermissions',
   USERS_SET_PERMISSIONS = 'users.setPermissions',
-  USERS_GET_GROUPS = 'users.getGroups',
-  USERS_SET_GROUPS = 'users.setGroups',
-  // groups
-  GROUPS_LIST = 'groups.list',
-  GROUPS_SHOW = 'groups.show',
-  GROUPS_CREATE = 'groups.create',
-  GROUPS_UPDATE = 'groups.update',
-  GROUPS_DELETE = 'groups.delete',
-  GROUPS_RESTORE = 'groups.restore',
-  GROUPS_GET_PERMISSIONS = 'groups.getPermissions',
-  GROUPS_SET_PERMISSIONS = 'groups.setPermissions',
+  USERS_GET_ROLES = 'users.getRoles',
+  USERS_SET_ROLES = 'users.setRoles',
+  // roles
+  ROLES_LIST = 'roles.list',
+  ROLES_SHOW = 'roles.show',
+  ROLES_CREATE = 'roles.create',
+  ROLES_UPDATE = 'roles.update',
+  ROLES_DELETE = 'roles.delete',
+  ROLES_RESTORE = 'roles.restore',
+  ROLES_GET_PERMISSIONS = 'roles.getPermissions',
+  ROLES_SET_PERMISSIONS = 'roles.setPermissions',
   // permissions
   PERMISSIONS_LIST = 'permissions.list',
   // persons

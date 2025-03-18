@@ -1,7 +1,7 @@
 import { IsString, MinLength } from 'class-validator';
 
-export class UpdateGroupDTO {
+export class CreateRoleDTO {
   @IsString()
   @MinLength(3)
-  description?: string;
+  description: string;
 }

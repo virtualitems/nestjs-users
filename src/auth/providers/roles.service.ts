@@ -4,21 +4,21 @@ import {
   RequiredEntityData,
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
-import { Group } from '../entities/group.entity';
+import { Role } from '../entities/role.entity';
 
 @Injectable()
-export class GroupsService {
+export class RolesService {
   public async list(
     em: EntityManager,
     options?: {
       page?: number;
       limit?: number;
-      fields?: (keyof Group)[];
-      where?: FilterQuery<Group>;
+      fields?: (keyof Role)[];
+      where?: FilterQuery<Role>;
     },
-  ): Promise<Group[]> {
+  ): Promise<Role[]> {
     if (options === undefined) {
-      return await em.findAll(Group, {});
+      return await em.findAll(Role, {});
     }
 
     if (options.page !== undefined && options.page < 1) {
@@ -35,7 +35,7 @@ export class GroupsService {
       queryOptions['offset'] = (page - 1) * (options.limit ?? 10);
     }
 
-    const entities = await em.findAll(Group, queryOptions);
+    const entities = await em.findAll(Role, queryOptions);
 
     em.clear();
 
@@ -44,12 +44,12 @@ export class GroupsService {
 
   public async find(
     em: EntityManager,
-    where: FilterQuery<Group>,
+    where: FilterQuery<Role>,
     options?: {
-      fields: (keyof Group)[];
+      fields: (keyof Role)[];
     },
-  ): Promise<Group | null> {
-    const entity = await em.findOne(Group, where, options);
+  ): Promise<Role | null> {
+    const entity = await em.findOne(Role, where, options);
 
     em.clear();
 
@@ -58,19 +58,19 @@ export class GroupsService {
 
   public async create(
     em: EntityManager,
-    data: RequiredEntityData<Group>,
-  ): Promise<Group> {
-    const entity = em.create(Group, data);
+    data: RequiredEntityData<Role>,
+  ): Promise<Role> {
+    const entity = em.create(Role, data);
     await em.persist(entity).flush();
     return entity;
   }
 
   public async update(
     em: EntityManager,
-    data: Partial<Group>,
-    where: FilterQuery<Group>,
+    data: Partial<Role>,
+    where: FilterQuery<Role>,
   ) {
-    const targets = await em.find(Group, where);
+    const targets = await em.find(Role, where);
 
     for (const target of targets) {
       em.assign(target, data);
@@ -81,11 +81,11 @@ export class GroupsService {
 
   public async remove(
     em: EntityManager,
-    where: FilterQuery<Group>,
+    where: FilterQuery<Role>,
   ): Promise<void> {
     const date = new Date();
 
-    const targets = await em.find(Group, where);
+    const targets = await em.find(Role, where);
 
     for (const target of targets) {
       em.assign(target, { deletedAt: date });

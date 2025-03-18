@@ -5,13 +5,13 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { UserGroup } from './user-group.entity';
+import { UserRole } from './user-role.entity';
 import { User } from './user.entity';
 import { Permission } from './permission.entity';
-import { GroupPermission } from './group-permission.entity';
+import { RolePermission } from './role-permission.entity';
 
-@Entity({ tableName: 'auth_groups' })
-export class Group {
+@Entity({ tableName: 'auth_roles' })
+export class Role {
   @PrimaryKey({ fieldName: 'id' })
   id?: number;
 
@@ -29,14 +29,14 @@ export class Group {
 
   @ManyToMany({
     entity: () => User,
-    pivotEntity: () => UserGroup,
-    mappedBy: 'groups',
+    pivotEntity: () => UserRole,
+    mappedBy: 'roles',
   })
   users = new Collection<User>(this);
 
   @ManyToMany({
     entity: () => Permission,
-    pivotEntity: () => GroupPermission,
+    pivotEntity: () => RolePermission,
   })
   permissions = new Collection<Permission>(this);
 }

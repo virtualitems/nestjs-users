@@ -3,17 +3,17 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
-import { GroupsController } from './controllers/groups.controller';
+import { RolesController } from './controllers/roles.controller';
 import { UsersController } from './controllers/users.controller';
 
-import { GroupPermission } from './entities/group-permission.entity';
-import { Group } from './entities/group.entity';
+import { RolePermission } from './entities/role-permission.entity';
+import { Role } from './entities/role.entity';
 import { Permission } from './entities/permission.entity';
-import { UserGroup } from './entities/user-group.entity';
+import { UserRole } from './entities/user-role.entity';
 import { UserPermission } from './entities/user-permission.entity';
 import { User } from './entities/user.entity';
 
-import { GroupsService } from './providers/groups.service';
+import { RolesService } from './providers/roles.service';
 import { JwtStrategy } from './providers/jwt.strategy';
 import { SecurityService } from './providers/security.service';
 import { UsersService } from './providers/users.service';
@@ -35,18 +35,18 @@ import { PermissionsController } from './controllers/permissions.controller';
     MikroOrmModule.forFeature({
       entities: [
         User,
-        Group,
+        Role,
         Permission,
-        UserGroup,
+        UserRole,
         UserPermission,
-        GroupPermission,
+        RolePermission,
       ],
     }),
   ],
-  controllers: [UsersController, GroupsController, PermissionsController],
+  controllers: [UsersController, RolesController, PermissionsController],
   providers: [
     ConfigService,
-    GroupsService,
+    RolesService,
     JwtService,
     JwtStrategy,
     PermissionsGuard,
@@ -54,6 +54,6 @@ import { PermissionsController } from './controllers/permissions.controller';
     SecurityService,
     UsersService,
   ],
-  exports: [UsersService, GroupsService, PermissionsService],
+  exports: [UsersService, RolesService, PermissionsService],
 })
 export class AuthModule {}

@@ -38,8 +38,8 @@ import { SecurityService } from '../providers/security.service';
 import { User } from '../entities/user.entity';
 import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dto';
 import { PermissionsService } from '../providers/permissions.service';
-import { GroupsService } from '../providers/groups.service';
-import { SaveUserGroupsDTO } from '../data-objects/save-user-groups.dto';
+import { RolesService } from '../providers/roles.service';
+import { SaveUserRolesDTO } from '../data-objects/save-user-roles.dto';
 import { JwtPayload } from '../interfaces/jwt.interface';
 import { permissions } from '../constants/permissions';
 
@@ -48,7 +48,7 @@ export class UsersController {
   constructor(
     protected readonly usersService: UsersService,
     protected readonly permissionsService: PermissionsService,
-    protected readonly groupsService: GroupsService,
+    protected readonly rolesService: RolesService,
     protected readonly securityService: SecurityService,
     protected readonly em: EntityManager,
   ) {}
@@ -253,14 +253,14 @@ export class UsersController {
       fields: ['id'],
     });
 
-    const groups = await user.groups.init({
+    const roles = await user.roles.init({
       fields: ['id'],
     });
 
     const payload: JwtPayload = {
       sub: user.id,
       pms: permissions.map((item) => item.id!),
-      ugs: groups.map((item) => item.id!),
+      ugs: roles.map((item) => item.id!),
     };
 
     const token = this.securityService.generateToken(payload);
@@ -337,12 +337,12 @@ export class UsersController {
     await this.em.persistAndFlush(user);
   }
 
-  @Get(':id/groups')
-  @Permissions(permissions.USERS_GET_GROUPS)
+  @Get(':id/roles')
+  @Permissions(permissions.USERS_GET_ROLES)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  public async groups(
+  public async roles(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<HttpJsonResponse<object[]>> {
     const entity = await this.usersService.find(
@@ -360,7 +360,7 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const collection = await entity.groups.init({
+    const collection = await entity.roles.init({
       fields: ['id', 'slug', 'description', 'permissions'],
       populate: ['permissions'],
     });
@@ -368,14 +368,14 @@ export class UsersController {
     return { data: collection.toArray() };
   }
 
-  @Post(':id/groups')
-  @Permissions(permissions.USERS_SET_GROUPS)
+  @Post(':id/roles')
+  @Permissions(permissions.USERS_SET_ROLES)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async saveGroups(
+  public async saveRoles(
     @Param('id', ParseIntPipe) id: number,
-    @Body() body: SaveUserGroupsDTO,
+    @Body() body: SaveUserRolesDTO,
   ): Promise<void> {
     const user = await this.usersService.find(
       this.em,
@@ -392,14 +392,14 @@ export class UsersController {
       throw new NotFoundException();
     }
 
-    const groups = await this.groupsService.list(this.em, {
+    const roles = await this.rolesService.list(this.em, {
       fields: ['id', 'slug', 'description'],
-      where: { id: { $in: body.groups } },
+      where: { id: { $in: body.roles } },
     });
 
-    const collection = await user.groups.init();
+    const collection = await user.roles.init();
 
-    collection.set(groups);
+    collection.set(roles);
 
     await this.em.persistAndFlush(user);
   }
