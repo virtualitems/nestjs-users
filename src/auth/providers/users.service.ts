@@ -1,4 +1,3 @@
-import { LockMode } from '@mikro-orm/core';
 import {
   RequiredEntityData,
   EntityManager,
@@ -48,7 +47,7 @@ export class UsersService {
       queryOptions['offset'] = (page - 1) * (options.limit ?? 10);
     }
 
-    queryOptions['lockMode'] = LockMode.PESSIMISTIC_READ;
+    // queryOptions['lockMode'] = LockMode.PESSIMISTIC_READ;
 
     const entities = await em.findAll(User, queryOptions);
 
@@ -73,7 +72,7 @@ export class UsersService {
     },
   ): Promise<User | null> {
     if (options !== undefined) {
-      options['lockMode'] = LockMode.PESSIMISTIC_READ;
+      // options['lockMode'] = LockMode.PESSIMISTIC_READ;
     }
 
     const entity = await em.findOne(User, where, options);
@@ -112,6 +111,7 @@ export class UsersService {
     data: Partial<User>,
     where: FilterQuery<User>,
   ) {
+    // LockMode.PESSIMISTIC_WRITE
     const targets = await em.find(User, where);
 
     for (const target of targets) {
@@ -132,6 +132,7 @@ export class UsersService {
     em: EntityManager,
     where: FilterQuery<User>,
   ): Promise<void> {
+    // LockMode.PESSIMISTIC_WRITE
     const date = new Date();
 
     const targets = await em.find(User, where);
