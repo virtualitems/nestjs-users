@@ -16,15 +16,16 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 
+import { permissions } from '../../auth/constants/permissions';
 import { UsersService } from '../../auth/providers/users.service';
-import { multerConfiguration } from '../../multer.config';
+import { multerDiskStorage } from '../../multer.config';
 import { PersonsService } from '../../persons/providers/persons.service';
+import { HashingService } from '../../shared/providers/hashing.service';
 import { JwtAuthGuard, Permissions } from '../../shared/providers/jwt.guard';
+import { RefreshTokenInterceptor } from '../../shared/providers/jwt.interceptor';
 import { CreateAuthPersonDTO } from '../data-objects/create-auth-person.dto';
 import { AuthPersonsService } from '../providers/auth-persons.service';
-import { permissions } from '../../auth/constants/permissions';
-import { RefreshTokenInterceptor } from '../../shared/providers/jwt.interceptor';
-import { HashingService } from '../../shared/providers/hashing.service';
+import { env } from '../../shared/dotenv';
 
 @Controller('auth-persons')
 export class AuthPersonsController {
@@ -40,7 +41,9 @@ export class AuthPersonsController {
   @Permissions(permissions.USERS_CREATE, permissions.PERSONS_CREATE)
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
-  @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
+  @UseInterceptors(
+    FileInterceptor('avatar', multerDiskStorage(env.MEDIA_STORAGE_PATH)),
+  )
   @HttpCode(HttpStatus.CREATED)
   public async create(
     @Body() body: CreateAuthPersonDTO,
