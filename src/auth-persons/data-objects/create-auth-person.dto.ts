@@ -1,4 +1,4 @@
-import { IsString, IsEmail, MinLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class CreateAuthPersonDTO {
   @IsEmail()
@@ -11,4 +11,7 @@ export class CreateAuthPersonDTO {
   @IsString()
   @MinLength(3)
   name!: string;
+
+  @IsOptional()
+  avatar?: Express.Multer.File;
 }
