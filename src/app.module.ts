@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -20,6 +20,5 @@ const configModuleOptions = {
     AuthPersonsModule,
   ],
   controllers: [AppController],
-  providers: [ConfigService],
 })
 export class AppModule {}
