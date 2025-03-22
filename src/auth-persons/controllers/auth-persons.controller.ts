@@ -11,19 +11,20 @@ import {
   InternalServerErrorException,
   Post,
   UploadedFile,
-  // UseGuards,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-
-import { CreateAuthPersonDTO } from '../data-objects/create-auth-person.dto';
-// import { JwtAuthGuard } from '../../auth/guards/jwt.guard';
-// import { RefreshTokenInterceptor } from '../../auth/interceptors/jwt.interceptor';
-// import { permissions } from '../../auth/constants/permissions';
 import { FileInterceptor } from '@nestjs/platform-express';
+
+import { UsersService } from '../../auth/providers/users.service';
 import { multerConfiguration } from '../../multer.config';
 import { PersonsService } from '../../persons/providers/persons.service';
-import { UsersService } from '../../auth/providers/users.service';
+import { JwtAuthGuard, Permissions } from '../../shared/providers/jwt.guard';
+import { CreateAuthPersonDTO } from '../data-objects/create-auth-person.dto';
 import { AuthPersonsService } from '../providers/auth-persons.service';
+import { permissions } from '../../auth/constants/permissions';
+import { RefreshTokenInterceptor } from '../../shared/providers/jwt.interceptor';
+import { HashingService } from '../../shared/providers/hashing.service';
 
 @Controller('auth-persons')
 export class AuthPersonsController {
@@ -31,13 +32,14 @@ export class AuthPersonsController {
     protected readonly usersService: UsersService,
     protected readonly personsService: PersonsService,
     protected readonly authPersonsService: AuthPersonsService,
+    protected readonly hashService: HashingService,
     protected readonly em: EntityManager,
   ) {}
 
   @Post()
-  // @Permissions(permissions.USERS_CREATE, permissions.PERSONS_CREATE)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_CREATE, permissions.PERSONS_CREATE)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @UseInterceptors(FileInterceptor('avatar', multerConfiguration))
   @HttpCode(HttpStatus.CREATED)
   public async create(
@@ -71,9 +73,11 @@ export class AuthPersonsController {
       createdAt: now,
     };
 
+    const password = this.hashService.encrypt(body.password);
+
     const userData = {
       email: body.email,
-      password: body.password,
+      password: password,
       createdAt: now,
       slug: crypto
         .createHash('md5')
