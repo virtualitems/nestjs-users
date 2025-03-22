@@ -10,8 +10,8 @@ import { JwtPayload } from '../interfaces/jwt.interface';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.getOrThrow('JWT_SECRET'),
     });
   }

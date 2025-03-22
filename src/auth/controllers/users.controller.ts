@@ -1,5 +1,5 @@
-import { type ServerResponse } from 'node:http';
 import * as crypto from 'node:crypto';
+import { ServerResponse } from 'node:http';
 
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import {
@@ -18,24 +18,25 @@ import {
   Query,
   Res,
   UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-
 import { JwtService } from '@nestjs/jwt';
 
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
-
-import { LoginUserDTO } from '../data-objects/login-user.dto';
+import { JwtAuthGuard, Permissions } from '../../shared/providers/jwt.guard';
+import { RefreshTokenInterceptor } from '../../shared/providers/jwt.interceptor';
+import { permissions } from '../constants/permissions';
 import { CreateUserDTO } from '../data-objects/create-user.dto';
-import { UpdateUserDTO } from '../data-objects/update-user.dto';
-import { UsersService } from '../providers/users.service';
-import { HashingService } from '../providers/hashing.service';
-import { User } from '../entities/user.entity';
+import { LoginUserDTO } from '../data-objects/login-user.dto';
 import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dto';
+import { SaveUserRolesDTO } from '../data-objects/save-user-roles.dto';
+import { UpdateUserDTO } from '../data-objects/update-user.dto';
+import { User } from '../entities/user.entity';
+import { HashingService } from '../providers/hashing.service';
 import { PermissionsService } from '../providers/permissions.service';
 import { RolesService } from '../providers/roles.service';
-import { SaveUserRolesDTO } from '../data-objects/save-user-roles.dto';
-import { JwtPayload } from '../../shared/interfaces/jwt.interface';
-import { permissions } from '../constants/permissions';
+import { UsersService } from '../providers/users.service';
 
 @Controller('users')
 export class UsersController {
@@ -49,9 +50,9 @@ export class UsersController {
   ) {}
 
   @Get()
-  // @Permissions(permissions.USERS_LIST)
-  // @UseGuards(JwtAuthGuard, PermissionsGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_LIST)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: PaginationDTO,
@@ -75,9 +76,9 @@ export class UsersController {
   }
 
   @Get(':id')
-  // @Permissions(permissions.USERS_SHOW)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_SHOW)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id', ParseIntPipe) id: number,
@@ -153,9 +154,9 @@ export class UsersController {
   }
 
   @Put(':id')
-  // @Permissions(permissions.USERS_UPDATE)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_UPDATE)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id', ParseIntPipe) id: number,
@@ -190,9 +191,9 @@ export class UsersController {
   }
 
   @Delete(':id')
-  // @Permissions(permissions.USERS_DELETE)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_DELETE)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     const existent = await this.usersService.find(
@@ -214,7 +215,7 @@ export class UsersController {
   }
 
   @Post('login')
-  // @Permissions(permissions.USERS_LOGIN)
+  @Permissions(permissions.USERS_LOGIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
     @Body() body: LoginUserDTO,
@@ -244,19 +245,7 @@ export class UsersController {
       { id: user.id },
     );
 
-    const permissions = await user.permissions.init({
-      fields: ['id'],
-    });
-
-    const roles = await user.roles.init({
-      fields: ['id'],
-    });
-
-    const payload: JwtPayload = {
-      sub: user.id,
-      pms: permissions.map((item) => item.id!),
-      ugs: roles.map((item) => item.id!),
-    };
+    const payload = { sub: user.id };
 
     const token = this.jwtService.sign(payload);
 
@@ -267,9 +256,9 @@ export class UsersController {
   }
 
   @Get(':id/permissions')
-  // @Permissions(permissions.USERS_GET_PERMISSIONS)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_GET_PERMISSIONS)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
@@ -297,9 +286,9 @@ export class UsersController {
   }
 
   @Post(':id/permissions')
-  // @Permissions(permissions.USERS_SET_PERMISSIONS)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_SET_PERMISSIONS)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async savePermissions(
     @Param('id', ParseIntPipe) id: number,
@@ -333,9 +322,9 @@ export class UsersController {
   }
 
   @Get(':id/roles')
-  // @Permissions(permissions.USERS_GET_ROLES)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_GET_ROLES)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async roles(
     @Param('id', ParseIntPipe) id: number,
@@ -364,9 +353,9 @@ export class UsersController {
   }
 
   @Post(':id/roles')
-  // @Permissions(permissions.USERS_SET_ROLES)
-  // @UseGuards(JwtAuthGuard)
-  // @UseInterceptors(RefreshTokenInterceptor)
+  @Permissions(permissions.USERS_SET_ROLES)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async saveRoles(
     @Param('id', ParseIntPipe) id: number,

@@ -1,7 +1,7 @@
 import {
-  RequiredEntityData,
   EntityManager,
   FilterQuery,
+  RequiredEntityData,
 } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
 
@@ -68,7 +68,8 @@ export class UsersService {
     em: EntityManager,
     where: FilterQuery<User>,
     options?: {
-      fields: (keyof User)[];
+      fields?: (keyof User)[];
+      populate?: (keyof User)[];
     },
   ): Promise<User | null> {
     if (options !== undefined) {

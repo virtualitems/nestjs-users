@@ -1,34 +1,36 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  SetMetadata,
-} from '@nestjs/common';
+import { ClientRequest } from 'http';
+
+import { EntityManager } from '@mikro-orm/sqlite';
+import { ExecutionContext, Injectable, SetMetadata } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
-import { ClientRequest } from 'http';
+
+import { PermissionsService } from '../../auth/providers/permissions.service';
 import { UsersService } from '../../auth/providers/users.service';
 import { JwtPayload } from '../interfaces/jwt.interface';
-import { EntityManager } from '@mikro-orm/sqlite';
 
 export const PERMISSIONS_META_KEY = 'meta_user_permissions';
-
-@Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt') {}
 
 export function Permissions(...permissions: string[]) {
   return SetMetadata(PERMISSIONS_META_KEY, permissions);
 }
 
 @Injectable()
-export class PermissionsGuard implements CanActivate {
+export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
-    protected reflector: Reflector,
-    protected em: EntityManager,
-    protected usersService: UsersService,
-  ) {}
+    protected readonly em: EntityManager,
+    protected readonly reflector: Reflector,
+    protected readonly usersService: UsersService,
+    protected readonly permissionsService: PermissionsService,
+  ) {
+    super();
+  }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if ((await super.canActivate(context)) === false) {
+      return false;
+    }
+
     const reqPermissions = this.reflector.get<string[]>(
       PERMISSIONS_META_KEY,
       context.getHandler(),
@@ -38,43 +40,29 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    const request: ClientRequest & { user: JwtPayload } = context
+    const request: ClientRequest & { user?: JwtPayload } = context
       .switchToHttp()
       .getRequest();
 
+    if (request.user === undefined) {
+      return false;
+    }
+
     const payload = request.user;
 
-    const user = await this.usersService.find(this.em, { id: payload.sub });
+    const user = await this.usersService.find(this.em, {
+      id: payload.sub,
+      deletedAt: null,
+    });
 
     if (user === null) {
       return false;
     }
 
-    const permsSet = new Set();
-
-    const userPerms = await user.permissions.init({
-      fields: ['slug'],
-    });
-
-    userPerms.getItems().forEach((perm) => {
-      permsSet.add(perm.slug);
-    });
-
-    const userRoles = await user.roles.init({
-      fields: ['permissions'],
-      populate: ['permissions'],
-    });
-
-    userRoles.getItems().forEach((role) => {
-      role.permissions.getItems().forEach((perm) => {
-        permsSet.add(perm.slug);
-      });
-    });
-
-    this.em.clear();
+    const perms = await this.permissionsService.byUser(this.em, user);
 
     for (const perm of reqPermissions) {
-      if (!permsSet.has(perm)) {
+      if (!perms.some((p) => p.slug === perm)) {
         return false;
       }
     }

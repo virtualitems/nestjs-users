@@ -1,6 +1,8 @@
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
 import { Injectable } from '@nestjs/common';
+
 import { Permission } from '../entities/permission.entity';
+import { User } from '../entities/user.entity';
 
 @Injectable()
 export class PermissionsService {
@@ -50,5 +52,15 @@ export class PermissionsService {
     em.clear();
 
     return entity;
+  }
+
+  public async byUser(em: EntityManager, user: User): Promise<Permission[]> {
+    const perms = await em.find(Permission, {
+      $or: [{ users: { id: user.id } }, { roles: { users: { id: user.id } } }],
+    });
+
+    em.clear();
+
+    return perms;
   }
 }
