@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 
 import { RolesController } from './controllers/roles.controller';
@@ -23,9 +23,7 @@ import { PermissionsController } from './controllers/permissions.controller';
 
 @Module({
   imports: [
-    ConfigModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
         secret: configService.getOrThrow('JWT_SECRET'),
@@ -45,7 +43,6 @@ import { PermissionsController } from './controllers/permissions.controller';
   ],
   controllers: [UsersController, RolesController, PermissionsController],
   providers: [
-    ConfigService,
     HashingService,
     JwtService,
     JwtStrategy,
