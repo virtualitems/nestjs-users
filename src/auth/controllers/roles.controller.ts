@@ -15,20 +15,15 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 import { CreateRoleDTO } from '../data-objects/create-role.dto';
 import { UpdateRoleDTO } from '../data-objects/update-role.dto';
 import { RolesService } from '../providers/roles.service';
-import { JwtAuthGuard, Permissions } from '../guards/jwt.guard';
-import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { Role } from '../entities/role.entity';
 import { PermissionsService } from '../providers/permissions.service';
 import { SaveRolesPermissionsDTO } from '../data-objects/save-roles-permissions.dto';
-import { permissions } from '../constants/permissions';
 
 @Controller('roles')
 export class RolesController {
@@ -39,9 +34,9 @@ export class RolesController {
   ) {}
 
   @Get()
-  @Permissions(permissions.ROLES_LIST)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_LIST)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: PaginationDTO,
@@ -65,9 +60,9 @@ export class RolesController {
   }
 
   @Get(':id')
-  @Permissions(permissions.ROLES_SHOW)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_SHOW)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id', ParseIntPipe) id: number,
@@ -88,9 +83,9 @@ export class RolesController {
   }
 
   @Post()
-  @Permissions(permissions.ROLES_CREATE)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_CREATE)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateRoleDTO): Promise<void> {
     const time = new Date().getTime();
@@ -107,9 +102,9 @@ export class RolesController {
   }
 
   @Put(':id')
-  @Permissions(permissions.ROLES_LIST)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_LIST)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id', ParseIntPipe) id: number,
@@ -138,9 +133,9 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @Permissions(permissions.ROLES_DELETE)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_DELETE)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async remove(@Param('id', ParseIntPipe) id: number) {
     const existent = await this.rolesService.find(
@@ -162,9 +157,9 @@ export class RolesController {
   }
 
   @Get(':id/permissions')
-  @Permissions(permissions.ROLES_GET_PERMISSIONS)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_GET_PERMISSIONS)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
@@ -192,9 +187,9 @@ export class RolesController {
   }
 
   @Post(':id/permissions')
-  @Permissions(permissions.ROLES_SET_PERMISSIONS)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.ROLES_SET_PERMISSIONS)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async savePermissions(
     @Param('id', ParseIntPipe) id: number,

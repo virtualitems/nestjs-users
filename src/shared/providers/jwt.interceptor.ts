@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 
 import { JwtPayload } from '../interfaces/jwt.interface';
-import { SecurityService } from '../providers/security.service';
+import { HashingService } from '../../auth/providers/hashing.service';
 
 type RequestWithContext = ClientRequest & {
   user?: JwtPayload;
@@ -17,7 +17,7 @@ type RequestWithContext = ClientRequest & {
 
 @Injectable()
 export class RefreshTokenInterceptor implements NestInterceptor {
-  constructor(protected readonly securityService: SecurityService) {}
+  constructor(protected readonly hashingService: HashingService) {}
 
   intercept(context: ExecutionContext, next: CallHandler) {
     const request = context.switchToHttp().getRequest<RequestWithContext>();
@@ -29,7 +29,7 @@ export class RefreshTokenInterceptor implements NestInterceptor {
 
     const { sub, pms, ugs } = request.user;
 
-    const token = this.securityService.generateToken({ sub, pms, ugs });
+    const token = JSON.stringify({ sub, pms, ugs }); // this.securityService.generateToken({ sub, pms, ugs });
 
     if (token === undefined) {
       return next.handle();

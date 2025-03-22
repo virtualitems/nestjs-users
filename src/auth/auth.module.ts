@@ -14,11 +14,11 @@ import { UserPermission } from './entities/user-permission.entity';
 import { User } from './entities/user.entity';
 
 import { RolesService } from './providers/roles.service';
-import { JwtStrategy } from './providers/jwt.strategy';
-import { SecurityService } from './providers/security.service';
+import { JwtStrategy } from '../shared/providers/jwt.strategy';
+import { HashingService } from './providers/hashing.service';
 import { UsersService } from './providers/users.service';
 import { PermissionsService } from './providers/permissions.service';
-import { PermissionsGuard } from './guards/jwt.guard';
+import { PermissionsGuard } from '../shared/providers/jwt.guard';
 import { PermissionsController } from './controllers/permissions.controller';
 
 @Module({
@@ -46,12 +46,12 @@ import { PermissionsController } from './controllers/permissions.controller';
   controllers: [UsersController, RolesController, PermissionsController],
   providers: [
     ConfigService,
-    RolesService,
+    HashingService,
     JwtService,
     JwtStrategy,
     PermissionsGuard,
     PermissionsService,
-    SecurityService,
+    RolesService,
     UsersService,
   ],
   exports: [UsersService, RolesService, PermissionsService],

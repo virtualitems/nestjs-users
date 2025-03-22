@@ -18,45 +18,40 @@ import {
   Query,
   Res,
   UnauthorizedException,
-  UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
+
+import { JwtService } from '@nestjs/jwt';
 
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
 
 import { LoginUserDTO } from '../data-objects/login-user.dto';
 import { CreateUserDTO } from '../data-objects/create-user.dto';
 import { UpdateUserDTO } from '../data-objects/update-user.dto';
-import {
-  JwtAuthGuard,
-  Permissions,
-  PermissionsGuard,
-} from '../guards/jwt.guard';
-import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { UsersService } from '../providers/users.service';
-import { SecurityService } from '../providers/security.service';
+import { HashingService } from '../providers/hashing.service';
 import { User } from '../entities/user.entity';
 import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dto';
 import { PermissionsService } from '../providers/permissions.service';
 import { RolesService } from '../providers/roles.service';
 import { SaveUserRolesDTO } from '../data-objects/save-user-roles.dto';
-import { JwtPayload } from '../interfaces/jwt.interface';
+import { JwtPayload } from '../../shared/interfaces/jwt.interface';
 import { permissions } from '../constants/permissions';
 
 @Controller('users')
 export class UsersController {
   constructor(
-    protected readonly usersService: UsersService,
+    protected readonly hashingService: HashingService,
+    protected readonly jwtService: JwtService,
     protected readonly permissionsService: PermissionsService,
     protected readonly rolesService: RolesService,
-    protected readonly securityService: SecurityService,
+    protected readonly usersService: UsersService,
     protected readonly em: EntityManager,
   ) {}
 
   @Get()
-  @Permissions(permissions.USERS_LIST)
-  @UseGuards(JwtAuthGuard, PermissionsGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_LIST)
+  // @UseGuards(JwtAuthGuard, PermissionsGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: PaginationDTO,
@@ -80,9 +75,9 @@ export class UsersController {
   }
 
   @Get(':id')
-  @Permissions(permissions.USERS_SHOW)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_SHOW)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async show(
     @Param('id', ParseIntPipe) id: number,
@@ -128,7 +123,7 @@ export class UsersController {
         .createHash('md5')
         .update(body.email + time)
         .digest('hex'),
-      password: this.securityService.hash(body.password),
+      password: this.hashingService.encrypt(body.password),
       createdAt: new Date(),
     };
 
@@ -158,9 +153,9 @@ export class UsersController {
   }
 
   @Put(':id')
-  @Permissions(permissions.USERS_UPDATE)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_UPDATE)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async update(
     @Param('id', ParseIntPipe) id: number,
@@ -188,18 +183,18 @@ export class UsersController {
     const data = { ...body, updatedAt: new Date() };
 
     if (body.password !== undefined) {
-      data.password = this.securityService.hash(body.password);
+      data.password = this.hashingService.encrypt(body.password);
     }
 
     await this.usersService.update(this.em, body, { id });
   }
 
   @Delete(':id')
-  @Permissions(permissions.USERS_DELETE)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_DELETE)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
-  public async remove(@Param('id') id: number): Promise<void> {
+  public async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     const existent = await this.usersService.find(
       this.em,
       {
@@ -219,7 +214,7 @@ export class UsersController {
   }
 
   @Post('login')
-  @Permissions(permissions.USERS_LOGIN)
+  // @Permissions(permissions.USERS_LOGIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
     @Body() body: LoginUserDTO,
@@ -238,7 +233,7 @@ export class UsersController {
 
     if (
       user === null ||
-      !this.securityService.compare(body.password, user.password)
+      !this.hashingService.compare(body.password, user.password)
     ) {
       throw new UnauthorizedException();
     }
@@ -263,7 +258,7 @@ export class UsersController {
       ugs: roles.map((item) => item.id!),
     };
 
-    const token = this.securityService.generateToken(payload);
+    const token = this.jwtService.sign(payload);
 
     const authorization = `Bearer ${token}`;
 
@@ -272,9 +267,9 @@ export class UsersController {
   }
 
   @Get(':id/permissions')
-  @Permissions(permissions.USERS_GET_PERMISSIONS)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_GET_PERMISSIONS)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async permissions(
     @Param('id', ParseIntPipe) id: number,
@@ -302,9 +297,9 @@ export class UsersController {
   }
 
   @Post(':id/permissions')
-  @Permissions(permissions.USERS_SET_PERMISSIONS)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_SET_PERMISSIONS)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async savePermissions(
     @Param('id', ParseIntPipe) id: number,
@@ -338,9 +333,9 @@ export class UsersController {
   }
 
   @Get(':id/roles')
-  @Permissions(permissions.USERS_GET_ROLES)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_GET_ROLES)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async roles(
     @Param('id', ParseIntPipe) id: number,
@@ -369,9 +364,9 @@ export class UsersController {
   }
 
   @Post(':id/roles')
-  @Permissions(permissions.USERS_SET_ROLES)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.USERS_SET_ROLES)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.NO_CONTENT)
   public async saveRoles(
     @Param('id', ParseIntPipe) id: number,

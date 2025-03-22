@@ -1,19 +1,8 @@
 import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Query,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 
 import { PaginationDTO } from '../../shared/data-objects/pagination.dto';
-import { JwtAuthGuard, Permissions } from '../guards/jwt.guard';
-import { RefreshTokenInterceptor } from '../interceptors/jwt.interceptor';
 import { PermissionsService } from '../providers/permissions.service';
-import { permissions } from '../constants/permissions';
 import { Permission } from '../entities/permission.entity';
 
 @Controller('permissions')
@@ -24,9 +13,9 @@ export class PermissionsController {
   ) {}
 
   @Get()
-  @Permissions(permissions.PERMISSIONS_LIST)
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(RefreshTokenInterceptor)
+  // @Permissions(permissions.PERMISSIONS_LIST)
+  // @UseGuards(JwtAuthGuard)
+  // @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
   public async list(
     @Query() query: PaginationDTO,

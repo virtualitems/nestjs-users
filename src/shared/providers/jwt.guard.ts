@@ -7,7 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '@nestjs/passport';
 import { ClientRequest } from 'http';
-import { UsersService } from '../providers/users.service';
+import { UsersService } from '../../auth/providers/users.service';
 import { JwtPayload } from '../interfaces/jwt.interface';
 import { EntityManager } from '@mikro-orm/sqlite';
 
