@@ -14,7 +14,7 @@ import { Role } from './entities/role.entity';
 import { UserPermission } from './entities/user-permission.entity';
 import { UserRole } from './entities/user-role.entity';
 import { User } from './entities/user.entity';
-import { HashingService } from './providers/hashing.service';
+import { HashingService } from '../shared/providers/hashing.service';
 import { PermissionsService } from './providers/permissions.service';
 import { RolesService } from './providers/roles.service';
 import { UsersService } from './providers/users.service';

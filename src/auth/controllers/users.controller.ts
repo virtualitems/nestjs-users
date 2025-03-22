@@ -33,7 +33,7 @@ import { SaveUserPermissionsDTO } from '../data-objects/save-user-permissions.dt
 import { SaveUserRolesDTO } from '../data-objects/save-user-roles.dto';
 import { UpdateUserDTO } from '../data-objects/update-user.dto';
 import { User } from '../entities/user.entity';
-import { HashingService } from '../providers/hashing.service';
+import { HashingService } from '../../shared/providers/hashing.service';
 import { PermissionsService } from '../providers/permissions.service';
 import { RolesService } from '../providers/roles.service';
 import { UsersService } from '../providers/users.service';
