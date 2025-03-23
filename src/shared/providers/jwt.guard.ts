@@ -59,7 +59,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return false;
     }
 
-    const perms = await this.permissionsService.byUser(this.em, user);
+    const perms = await this.usersService.permissions(this.em, user);
 
     for (const perm of reqPermissions) {
       if (!perms.some((p) => p.slug === perm)) {

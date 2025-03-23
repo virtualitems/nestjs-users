@@ -6,6 +6,7 @@ import {
 import { Injectable } from '@nestjs/common';
 
 import { User } from '../entities/user.entity';
+import { Permission } from '../entities/permission.entity';
 
 /**
  * Service to manage user-related operations.
@@ -143,5 +144,26 @@ export class UsersService {
     }
 
     await em.flush();
+  }
+
+  /**
+   * Retrieves ALL permissions associated with the given user either directly
+   * or through roles that the user belongs to.
+   *
+   * @param em - The EntityManager used for interacting with the database.
+   * @param user - The user entity for which permissions are being retrieved.
+   * @returns A promise that resolves to an array of Permission objects associated with the user.
+   */
+  public async permissions(
+    em: EntityManager,
+    user: User,
+  ): Promise<Permission[]> {
+    const perms = await em.find(Permission, {
+      $or: [{ users: { id: user.id } }, { roles: { users: { id: user.id } } }],
+    });
+
+    em.clear();
+
+    return perms;
   }
 }
