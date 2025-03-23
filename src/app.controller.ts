@@ -36,12 +36,18 @@ export class AppController {
       roles: {
         list: this.baseUrl + '/roles',
         show: this.baseUrl + '/roles/:id',
+        store: this.baseUrl + '/roles',
+        update: this.baseUrl + '/roles/:id',
+        delete: this.baseUrl + '/roles/:id',
         permissions: this.baseUrl + '/roles/:id/permissions',
         users: this.baseUrl + '/roles/:id/users',
       },
       users: {
         list: this.baseUrl + '/users',
         show: this.baseUrl + '/users/:id',
+        store: this.baseUrl + '/users',
+        update: this.baseUrl + '/users/:id',
+        delete: this.baseUrl + '/users/:id',
         permissions: this.baseUrl + '/users/:id/permissions',
         roles: this.baseUrl + '/users/:id/roles',
       },
