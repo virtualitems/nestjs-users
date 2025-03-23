@@ -1,16 +1,12 @@
 import * as bcryptjs from 'bcryptjs';
 
 import { Injectable } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class HashingService {
-  constructor(
-    protected readonly jwtService: JwtService,
-    protected readonly configService: ConfigService,
-  ) {}
+  constructor(protected readonly configService: ConfigService) {}
 
   public encrypt(text: string): string {
     const salt = bcryptjs.genSaltSync(10);
