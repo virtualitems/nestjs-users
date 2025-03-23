@@ -26,19 +26,24 @@ export class AppController {
   index(): object {
     return {
       authPersons: {
-        rest: this.baseUrl + '/auth-persons/',
+        store: this.baseUrl + '/auth-persons',
       },
       permissions: {
-        rest: this.baseUrl + '/permissions/',
+        list: this.baseUrl + '/permissions',
+        roles: this.baseUrl + '/permissions/:id/roles',
+        users: this.baseUrl + '/permissions/:id/users',
       },
       roles: {
-        rest: this.baseUrl + '/roles/',
-        permissions: this.baseUrl + '/roles/permissions/',
+        list: this.baseUrl + '/roles',
+        show: this.baseUrl + '/roles/:id',
+        permissions: this.baseUrl + '/roles/:id/permissions',
+        users: this.baseUrl + '/roles/:id/users',
       },
       users: {
-        rest: this.baseUrl + '/users/',
-        permissiosn: this.baseUrl + '/users/permissions/',
-        roles: this.baseUrl + '/users/roles/',
+        list: this.baseUrl + '/users',
+        show: this.baseUrl + '/users/:id',
+        permissions: this.baseUrl + '/users/:id/permissions',
+        roles: this.baseUrl + '/users/:id/roles',
       },
     };
   }
