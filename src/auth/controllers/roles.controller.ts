@@ -228,4 +228,34 @@ export class RolesController {
 
     await this.em.persistAndFlush(role);
   }
+
+  @Get(':id/users')
+  @Permissions(permissions.ROLES_GET_PERMISSIONS)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async users(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const role = await this.rolesService.find(
+      this.em,
+      {
+        id,
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
+
+    if (role === null) {
+      throw new NotFoundException();
+    }
+
+    const collection = await role.users.init({
+      fields: ['id', 'slug', 'email'],
+    });
+
+    return { data: collection.toArray() };
+  }
 }
