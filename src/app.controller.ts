@@ -15,7 +15,7 @@ import { RefreshTokenInterceptor } from './shared/providers/jwt.interceptor';
 export class AppController {
   protected readonly baseUrl: string;
 
-  constructor() {
+  public constructor() {
     this.baseUrl = env.BASE_URL;
   }
 
@@ -23,7 +23,7 @@ export class AppController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.OK)
-  index(): object {
+  public index(): object {
     return {
       authPersons: {
         store: this.baseUrl + '/auth-persons',
@@ -53,4 +53,8 @@ export class AppController {
       },
     };
   }
+
+  @Get('health')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public health(): void {}
 }
