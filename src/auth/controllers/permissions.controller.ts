@@ -4,6 +4,9 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
   Query,
   UseGuards,
   UseInterceptors,
@@ -47,5 +50,63 @@ export class PermissionsController {
     });
 
     return { data: entities };
+  }
+
+  @Get(':id/roles')
+  @Permissions(permissions.PERMISSIONS_LIST)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async roles(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const permission = await this.permissionsService.find(
+      this.em,
+      {
+        id,
+      },
+      {
+        fields: ['id'],
+      },
+    );
+
+    if (permission === null) {
+      throw new NotFoundException();
+    }
+
+    const collection = await permission.roles.init({
+      fields: ['id', 'slug', 'description'],
+    });
+
+    return { data: collection.toArray() };
+  }
+
+  @Get(':id/users')
+  @Permissions(permissions.PERMISSIONS_LIST)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  public async users(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<HttpJsonResponse<object[]>> {
+    const permission = await this.permissionsService.find(
+      this.em,
+      {
+        id,
+      },
+      {
+        fields: ['id'],
+      },
+    );
+
+    if (permission === null) {
+      throw new NotFoundException();
+    }
+
+    const collection = await permission.users.init({
+      fields: ['id', 'slug', 'email'],
+    });
+
+    return { data: collection.toArray() };
   }
 }
