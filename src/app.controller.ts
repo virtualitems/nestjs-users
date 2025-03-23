@@ -1,17 +1,45 @@
-import { Controller, Get, HttpCode, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 
-import { routes } from './routes';
-import { ConfigService } from '@nestjs/config';
+import { env } from './shared/dotenv';
+import { JwtAuthGuard } from './shared/providers/jwt.guard';
+import { RefreshTokenInterceptor } from './shared/providers/jwt.interceptor';
 
 @Controller()
 export class AppController {
-  constructor(private readonly configService: ConfigService) {}
+  protected readonly baseUrl: string;
+
+  constructor() {
+    this.baseUrl = env.BASE_URL;
+  }
 
   @Get()
-  @UseGuards(AuthGuard('jwt'))
-  @HttpCode(200)
-  index(): RoutesDirectory {
-    return routes(this.configService.getOrThrow('BASE_URL'));
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
+  @HttpCode(HttpStatus.OK)
+  index(): object {
+    return {
+      authPersons: {
+        rest: this.baseUrl + '/auth-persons/',
+      },
+      permissions: {
+        rest: this.baseUrl + '/permissions/',
+      },
+      roles: {
+        rest: this.baseUrl + '/roles/',
+        permissions: this.baseUrl + '/roles/permissions/',
+      },
+      users: {
+        rest: this.baseUrl + '/users/',
+        permissiosn: this.baseUrl + '/users/permissions/',
+        roles: this.baseUrl + '/users/roles/',
+      },
+    };
   }
 }

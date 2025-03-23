@@ -99,6 +99,9 @@ export class UsersController {
   }
 
   @Post()
+  @Permissions(permissions.USERS_CREATE)
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(RefreshTokenInterceptor)
   @HttpCode(HttpStatus.CREATED)
   public async create(@Body() body: CreateUserDTO): Promise<void> {
     const existent = await this.usersService.find(
