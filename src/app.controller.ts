@@ -25,6 +25,9 @@ export class AppController {
   @HttpCode(HttpStatus.OK)
   public index(): object {
     return {
+      setup: {
+        store: this.baseUrl + '/setup',
+      },
       authPersons: {
         store: this.baseUrl + '/auth-persons',
       },
