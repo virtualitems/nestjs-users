@@ -25,7 +25,7 @@ import { JwtAuthGuard, Permissions } from '../../shared/providers/jwt.guard';
 import { RefreshTokenInterceptor } from '../../shared/providers/jwt.interceptor';
 import { CreateAuthPersonDTO } from '../data-objects/create-auth-person.dto';
 import { AuthPersonsService } from '../providers/auth-persons.service';
-import { env } from '../../shared/dotenv';
+import { env } from '../../shared/env';
 
 @Controller('auth-persons')
 export class AuthPersonsController {

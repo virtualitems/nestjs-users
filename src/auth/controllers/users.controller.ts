@@ -39,6 +39,7 @@ import { RolesService } from '../providers/roles.service';
 import { UsersService } from '../providers/users.service';
 import * as idtoken from '../../shared/idtoken';
 import { UpdateUserPasswordDTO } from '../data-objects/update-user-password.dto';
+import { env } from '../../shared/env';
 
 @Controller('users')
 export class UsersController {
@@ -378,7 +379,7 @@ export class UsersController {
     let id: string;
 
     try {
-      id = idtoken.retrieve(token, 'ACTIVATION_ID_TOKEN_SECRET');
+      id = idtoken.retrieve(token, env.USER_ACTIVATION_TOKEN_SECRET);
     } catch {
       throw new UnauthorizedException();
     }
@@ -411,7 +412,7 @@ export class UsersController {
     let id: string;
 
     try {
-      id = idtoken.retrieve(token, 'UPDATE_PASSWORD_ID_TOKEN_SECRET');
+      id = idtoken.retrieve(token, env.USER_PASSWORD_RESET_TOKEN_SECRET);
     } catch {
       throw new UnauthorizedException();
     }
@@ -441,7 +442,7 @@ export class UsersController {
     let id: string;
 
     try {
-      id = idtoken.retrieve(token, 'UPDATE_PASSWORD_ID_TOKEN_SECRET');
+      id = idtoken.retrieve(token, env.USER_PASSWORD_RESET_TOKEN_SECRET);
     } catch {
       throw new UnauthorizedException();
     }

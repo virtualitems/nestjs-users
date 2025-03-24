@@ -25,3 +25,25 @@ if (process.env.MEDIA_STORAGE_PATH === undefined) {
 if (process.env.NODE_ENV === undefined) {
   throw new Error('NODE_ENV is not defined in .env file');
 }
+
+if (process.env.USER_ACTIVATION_TOKEN_SECRET === undefined) {
+  throw new Error('USER_ACTIVATION_TOKEN_SECRET is not defined in .env file');
+}
+
+if (process.env.USER_ACTIVATION_TOKEN_EXPIRES_IN === undefined) {
+  throw new Error(
+    'USER_ACTIVATION_TOKEN_EXPIRES_IN is not defined in .env file',
+  );
+}
+
+if (process.env.USER_PASSWORD_RESET_TOKEN_SECRET === undefined) {
+  throw new Error(
+    'USER_PASSWORD_RESET_TOKEN_SECRET is not defined in .env file',
+  );
+}
+
+if (process.env.USER_PASSWORD_RESET_TOKEN_EXPIRES_IN === undefined) {
+  throw new Error(
+    'USER_PASSWORD_RESET_TOKEN_EXPIRES_IN is not defined in .env file',
+  );
+}

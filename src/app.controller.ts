@@ -7,7 +7,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
-import { env } from './shared/dotenv';
+import { env } from './shared/env';
 import { JwtAuthGuard } from './shared/providers/jwt.guard';
 import { RefreshTokenInterceptor } from './shared/providers/jwt.interceptor';
 

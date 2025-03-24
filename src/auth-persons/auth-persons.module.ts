@@ -8,7 +8,7 @@ import { UsersService } from '../auth/providers/users.service';
 import { Person } from '../persons/entities/person.entity';
 import { PersonsModule } from '../persons/persons.module';
 import { PersonsService } from '../persons/providers/persons.service';
-import { env } from '../shared/dotenv';
+import { env } from '../shared/env';
 import { HashingService } from '../shared/providers/hashing.service';
 import { AuthPersonsController } from './controllers/auth-persons.controller';
 import { PersonUser } from './entities/persons-users.entity';
