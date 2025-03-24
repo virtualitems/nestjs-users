@@ -1,0 +1,21 @@
+name: nestjs-users-api
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    restart: 'no'
+  api:
+    image: nestjs-users-api:1.0.0
+    container_name: api
+    build:
+      context: .
+      dockerfile: dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+    restart: 'no'

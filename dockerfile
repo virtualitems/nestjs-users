@@ -37,8 +37,6 @@ RUN npm install --only=production
 
 COPY --from=build /home/app/dist ./dist
 
-COPY --from=build /home/app/db.sqlite3 .
-
 COPY .env .env
 
 EXPOSE 80
