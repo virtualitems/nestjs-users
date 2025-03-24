@@ -8,9 +8,19 @@ export class RolePermission {
   @PrimaryKey({ fieldName: 'id' })
   id?: number;
 
-  @ManyToOne({ fieldName: 'role_id', entity: () => Role })
+  @ManyToOne({
+    fieldName: 'role_id',
+    entity: () => Role,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   role!: Role;
 
-  @ManyToOne({ fieldName: 'permission_id', entity: () => Permission })
+  @ManyToOne({
+    fieldName: 'permission_id',
+    entity: () => Permission,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   permission!: Permission;
 }

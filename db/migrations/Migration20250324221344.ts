@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20250317030228 extends Migration {
+export class Migration20250324221344 extends Migration {
 
   override async up(): Promise<void> {
     this.addSql(`insert into "auth_permissions" ("slug", "description") values ('users.list', 'List users')`);
@@ -29,6 +29,35 @@ export class Migration20250317030228 extends Migration {
     this.addSql(`insert into "auth_permissions" ("slug", "description") values ('persons.update', 'Update person')`);
     this.addSql(`insert into "auth_permissions" ("slug", "description") values ('persons.delete', 'Delete person')`);
     this.addSql(`insert into "auth_permissions" ("slug", "description") values ('persons.restore', 'Restore person')`);
+  }
+
+  override async down(): Promise<void> {
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.list';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.show';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.create';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.update';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.delete';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.restore';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.login';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.getPermissions';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.setPermissions';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.getRoles';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'users.setRoles';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.list';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.show';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.create';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.update';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.delete';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.restore';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.getPermissions';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'roles.setPermissions';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'permissions.list';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.list';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.show';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.create';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.update';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.delete';`);
+    this.addSql(`delete from "auth_permissions" where "slug" = 'persons.restore';`);
   }
 
 }

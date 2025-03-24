@@ -24,6 +24,9 @@ export class User {
   @Property({ fieldName: 'password' })
   password!: string;
 
+  @Property({ fieldName: 'is_confirmed', default: false })
+  isConfirmed: boolean;
+
   @Property({ fieldName: 'last_login', nullable: true })
   lastLogin?: Date | null;
 

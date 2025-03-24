@@ -7,9 +7,19 @@ export class PersonUser {
   @PrimaryKey({ fieldName: 'id' })
   id?: number;
 
-  @ManyToOne({ fieldName: 'user_id', entity: () => User })
+  @ManyToOne({
+    fieldName: 'user_id',
+    entity: () => User,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   user!: User;
 
-  @ManyToOne({ fieldName: 'person_id', entity: () => Person })
+  @ManyToOne({
+    fieldName: 'person_id',
+    entity: () => Person,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   person!: Person;
 }

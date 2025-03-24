@@ -8,9 +8,19 @@ export class UserRole {
   @PrimaryKey({ fieldName: 'id' })
   id?: number;
 
-  @ManyToOne({ fieldName: 'user_id', entity: () => User })
+  @ManyToOne({
+    fieldName: 'user_id',
+    entity: () => User,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   user!: User;
 
-  @ManyToOne({ fieldName: 'role_id', entity: () => Role })
+  @ManyToOne({
+    fieldName: 'role_id',
+    entity: () => Role,
+    updateRule: 'cascade',
+    deleteRule: 'no action',
+  })
   role!: Role;
 }
