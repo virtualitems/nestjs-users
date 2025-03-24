@@ -38,6 +38,7 @@ import { PermissionsService } from '../providers/permissions.service';
 import { RolesService } from '../providers/roles.service';
 import { UsersService } from '../providers/users.service';
 import * as idtoken from '../../shared/idtoken';
+import { UpdateUserPasswordDTO } from '../data-objects/update-user-password.dto';
 
 @Controller('users')
 export class UsersController {
@@ -377,7 +378,7 @@ export class UsersController {
     let id: string;
 
     try {
-      id = idtoken.retrieve(token, 'secret');
+      id = idtoken.retrieve(token, 'ACTIVATION_ID_TOKEN_SECRET');
     } catch {
       throw new UnauthorizedException();
     }
@@ -385,7 +386,7 @@ export class UsersController {
     const user = await this.usersService.find(
       this.em,
       {
-        id: parseInt(id, 10),
+        id: Number(id),
         deletedAt: null,
       },
       {
@@ -398,6 +399,63 @@ export class UsersController {
     }
 
     user.isConfirmed = true;
+
+    await this.em.persistAndFlush(user);
+  }
+
+  @Get('update-password/:idtoken')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async verifyUpdatePassword(
+    @Param('idtoken') token: string,
+  ): Promise<void> {
+    let id: string;
+
+    try {
+      id = idtoken.retrieve(token, 'UPDATE_PASSWORD_ID_TOKEN_SECRET');
+    } catch {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.find(
+      this.em,
+      {
+        id: Number(id),
+        deletedAt: null,
+      },
+      {
+        fields: ['id'],
+      },
+    );
+
+    if (user === null) {
+      throw new UnauthorizedException();
+    }
+  }
+
+  @Post('update-password/:idtoken')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async updatePassword(
+    @Param('idtoken') token: string,
+    @Body() body: UpdateUserPasswordDTO,
+  ): Promise<void> {
+    let id: string;
+
+    try {
+      id = idtoken.retrieve(token, 'UPDATE_PASSWORD_ID_TOKEN_SECRET');
+    } catch {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.find(this.em, {
+      id: Number(id),
+      deletedAt: null,
+    });
+
+    if (user === null) {
+      throw new UnauthorizedException();
+    }
+
+    user.password = this.hashingService.encrypt(body.password);
 
     await this.em.persistAndFlush(user);
   }
