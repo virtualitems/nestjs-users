@@ -6,7 +6,7 @@ type SignOptions = {
   algorithm?: string;
 };
 
-export function pack(
+export function sign(
   id: string,
   ttl: number,
   secret: string,
@@ -29,7 +29,7 @@ export function pack(
   return `${algBase64}.${idBase64}.${expBase64}.${sigBase64}`;
 }
 
-export function unpack(token: string, secret: string): string {
+export function retrieve(token: string, secret: string): string {
   const parts = token.split('.');
 
   if (parts.length !== 4) {

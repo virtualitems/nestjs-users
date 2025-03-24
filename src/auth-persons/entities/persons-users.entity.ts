@@ -13,7 +13,7 @@ export class PersonUser {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  user!: User;
+  user: User;
 
   @ManyToOne({
     fieldName: 'person_id',
@@ -21,5 +21,5 @@ export class PersonUser {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  person!: Person;
+  person: Person;
 }

@@ -6,13 +6,13 @@ export class Person {
   id?: number;
 
   @Property({ fieldName: 'name' })
-  name!: string;
+  name: string;
 
   @Property({ fieldName: 'avatar', nullable: true })
   avatar?: string;
 
   @Property({ fieldName: 'created_at', nullable: true })
-  createdAt?: Date | null;
+  createdAt?: Date | null = new Date();
 
   @Property({ fieldName: 'deleted_at', nullable: true, index: true })
   deletedAt?: Date | null;

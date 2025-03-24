@@ -14,7 +14,7 @@ export class UserPermission {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  user!: User;
+  user: User;
 
   @ManyToOne({
     fieldName: 'permission_id',
@@ -22,5 +22,5 @@ export class UserPermission {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  permission!: Permission;
+  permission: Permission;
 }

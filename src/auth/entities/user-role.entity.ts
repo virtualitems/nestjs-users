@@ -14,7 +14,7 @@ export class UserRole {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  user!: User;
+  user: User;
 
   @ManyToOne({
     fieldName: 'role_id',
@@ -22,5 +22,5 @@ export class UserRole {
     updateRule: 'cascade',
     deleteRule: 'no action',
   })
-  role!: Role;
+  role: Role;
 }

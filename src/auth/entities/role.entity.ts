@@ -16,16 +16,16 @@ export class Role {
   id?: number;
 
   @Property({ fieldName: 'slug', unique: true })
-  slug!: string;
+  slug: string;
 
   @Property({ fieldName: 'description' })
-  description!: string;
+  description: string;
 
   @Property({ fieldName: 'created_at', nullable: true })
-  createdAt!: Date;
+  createdAt?: Date | null = new Date();
 
   @Property({ fieldName: 'deleted_at', nullable: true, index: true })
-  deletedAt?: Date;
+  deletedAt?: Date | null;
 
   @ManyToMany({
     entity: () => User,

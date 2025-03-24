@@ -37,6 +37,7 @@ import { HashingService } from '../../shared/providers/hashing.service';
 import { PermissionsService } from '../providers/permissions.service';
 import { RolesService } from '../providers/roles.service';
 import { UsersService } from '../providers/users.service';
+import * as idtoken from '../../shared/idtoken';
 
 @Controller('users')
 export class UsersController {
@@ -366,6 +367,37 @@ export class UsersController {
     const collection = await user.roles.init();
 
     collection.set(roles);
+
+    await this.em.persistAndFlush(user);
+  }
+
+  @Get('activate/:idtoken')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async activate(@Param('idtoken') token: string): Promise<void> {
+    let id: string;
+
+    try {
+      id = idtoken.retrieve(token, 'secret');
+    } catch {
+      throw new UnauthorizedException();
+    }
+
+    const user = await this.usersService.find(
+      this.em,
+      {
+        id: parseInt(id, 10),
+        deletedAt: null,
+      },
+      {
+        fields: ['id', 'isConfirmed'],
+      },
+    );
+
+    if (user === null) {
+      throw new UnauthorizedException();
+    }
+
+    user.isConfirmed = true;
 
     await this.em.persistAndFlush(user);
   }

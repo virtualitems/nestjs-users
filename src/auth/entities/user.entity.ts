@@ -16,22 +16,22 @@ export class User {
   id?: number;
 
   @Property({ fieldName: 'slug', unique: true })
-  slug!: string;
+  slug: string;
 
   @Property({ fieldName: 'email', index: true })
-  email!: string;
+  email: string;
 
   @Property({ fieldName: 'password' })
-  password!: string;
+  password: string;
 
   @Property({ fieldName: 'is_confirmed', default: false })
-  isConfirmed: boolean;
+  isConfirmed?: boolean = false;
 
   @Property({ fieldName: 'last_login', nullable: true })
   lastLogin?: Date | null;
 
   @Property({ fieldName: 'created_at', nullable: true })
-  createdAt?: Date | null;
+  createdAt?: Date | null = new Date();
 
   @Property({ fieldName: 'deleted_at', nullable: true, index: true })
   deletedAt?: Date | null;

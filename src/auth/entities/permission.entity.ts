@@ -16,10 +16,10 @@ export class Permission {
   id?: number;
 
   @Property({ fieldName: 'slug', unique: true })
-  slug!: string;
+  slug: string;
 
   @Property({ fieldName: 'description' })
-  description!: string;
+  description: string;
 
   @ManyToMany({
     entity: () => User,
