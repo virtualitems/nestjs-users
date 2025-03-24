@@ -8,6 +8,7 @@ import { AuthPersonsModule } from './auth-persons/auth-persons.module';
 import { AuthModule } from './auth/auth.module';
 import mikroOrmConfig from './mikro-orm.config';
 import { SetupModule } from './setup/setup.module';
+import { SettingsModule } from './settings/settings.module';
 
 const configModuleOptions = {
   isGlobal: true,
@@ -21,6 +22,7 @@ const configModuleOptions = {
     ConfigModule.forRoot(configModuleOptions),
     MikroOrmModule.forRoot(mikroOrmConfig),
     SetupModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [JwtService],
