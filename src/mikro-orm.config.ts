@@ -1,16 +1,19 @@
-import { SqliteDriver } from '@mikro-orm/sqlite';
+import { defineConfig } from '@mikro-orm/postgresql';
 
-export default {
+export default defineConfig({
   entities: ['./dist/**/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts'],
-  dbName: 'db.sqlite3',
+  host: 'localhost',
+  port: 5432,
+  user: 'postgres',
+  password: 'password',
+  dbName: 'project1',
   migrations: {
     path: './db/migrations',
   },
   seeder: {
     path: './db/seeders',
   },
-  driver: SqliteDriver,
-  charset: 'UTF-8',
-  collate: 'UTF-8',
-};
+  charset: 'UTF8',
+  collate: 'es_ES.UTF-8',
+});

@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
 
-import { EntityManager } from '@mikro-orm/sqlite';
+import { EntityManager } from '@mikro-orm/postgresql';
 import {
   Body,
   Controller,

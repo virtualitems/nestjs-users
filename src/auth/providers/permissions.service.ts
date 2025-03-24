@@ -1,4 +1,4 @@
-import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
+import { EntityManager, FilterQuery } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 
 import { Permission } from '../entities/permission.entity';

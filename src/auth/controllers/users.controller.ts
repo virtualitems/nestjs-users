@@ -1,7 +1,7 @@
 import * as crypto from 'node:crypto';
 import { ServerResponse } from 'node:http';
 
-import { EntityManager, FilterQuery } from '@mikro-orm/sqlite';
+import { EntityManager, FilterQuery } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Body,

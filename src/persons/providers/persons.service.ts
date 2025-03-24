@@ -2,7 +2,7 @@ import {
   EntityManager,
   FilterQuery,
   RequiredEntityData,
-} from '@mikro-orm/sqlite';
+} from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import { Person } from '../entities/person.entity';
 
