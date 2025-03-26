@@ -17,6 +17,8 @@ RUN npm install
 
 RUN npm run build
 
+RUN npm run db:migration:up
+
 # Production stage
 
 FROM node:22-alpine AS production
