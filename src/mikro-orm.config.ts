@@ -1,15 +1,14 @@
 import { defineConfig } from '@mikro-orm/postgresql';
+import { env } from './shared/env';
 
 export default defineConfig({
   entities: ['./dist/**/*.entity.js'],
   entitiesTs: ['./src/**/*.entity.ts'],
-  host: 'postgres', // docker-compose container name
-  // if the database is running on the host machine
-  // use host.docker.internal instead of "postgres"
-  port: 5432,
-  user: 'postgres',
-  password: 'password',
-  dbName: 'project1',
+  host: env.DATABASE_HOST,
+  port: Number(env.DATABASE_PORT),
+  user: env.DATABASE_USER,
+  password: env.DATABASE_PASSWORD,
+  dbName: env.DATABASE_NAME,
   migrations: {
     path: './db/migrations',
   },
