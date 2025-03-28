@@ -1,4 +1,4 @@
-name: nestjs-users-api
+name: users-web-api
 services:
   postgres:
     image: postgres
@@ -9,7 +9,7 @@ services:
       - "5432:5432"
     restart: 'no'
   api:
-    image: nestjs-users-api:1.0.0
+    image: users-web-api:1.0.0
     container_name: api
     build:
       context: .

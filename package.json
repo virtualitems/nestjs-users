@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-users-api",
+  "name": "users-web-api",
   "version": "1.0.0",
   "description": "",
   "author": "",
@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
-    "build:image": "docker build --no-cache -t nestjs-users-api:1.0.0 .",
+    "build:image": "docker build --no-cache -t users-web-api:1.0.0 .",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
