@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class AuthPermissionsMigration extends Migration {
+export class  extends Migration {
 
   override async up(): Promise<void> {
     this.addSql(`insert into "auth_permissions" ("slug", "description") values ('users.list', 'List users')`);
