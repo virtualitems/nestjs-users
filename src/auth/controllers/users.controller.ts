@@ -1,5 +1,4 @@
 import * as crypto from 'node:crypto';
-import { ServerResponse } from 'node:http';
 
 import { EntityManager, FilterQuery } from '@mikro-orm/postgresql';
 import {
@@ -40,6 +39,8 @@ import { UsersService } from '../providers/users.service';
 import * as idtoken from '../../shared/idtoken';
 import { UpdateUserPasswordDTO } from '../data-objects/update-user-password.dto';
 import { env } from '../../shared/env';
+import { miliseconds } from 'src/shared/numerics';
+import { Response } from 'express';
 
 @Controller('users')
 export class UsersController {
@@ -131,6 +132,7 @@ export class UsersController {
         .update(body.email + time)
         .digest('hex'),
       password: this.hashingService.encrypt(body.password),
+      jwtVersion: time,
       createdAt: new Date(),
     };
 
@@ -203,7 +205,7 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   public async login(
     @Body() body: LoginUserDTO,
-    @Res() response: ServerResponse,
+    @Res() response: Response,
   ): Promise<void> {
     const user = await this.usersService.find(
       this.em,
@@ -213,7 +215,7 @@ export class UsersController {
         permissions: { slug: permissions.USERS_LOGIN.toString() },
       },
       {
-        fields: ['password'],
+        fields: ['password', 'jwtVersion'],
       },
     );
 
@@ -230,13 +232,21 @@ export class UsersController {
       { id: user.id },
     );
 
-    const payload = { sub: user.id };
+    const payload = {
+      sub: user.id,
+      ver: user.jwtVersion,
+      rex: Date.now() + miliseconds(env.JWT_REFRESH_EXPIRATION_TIME),
+    };
 
     const token = this.jwtService.sign(payload);
 
-    const authorization = `Bearer ${token}`;
+    response.cookie(env.JWT_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: miliseconds(env.JWT_COOKIE_MAX_AGE),
+    });
 
-    response.setHeader('Authorization', authorization);
     response.end();
   }
 

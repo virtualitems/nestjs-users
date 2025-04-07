@@ -3,6 +3,8 @@ import * as fs from 'fs';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 
+import * as cookieParser from 'cookie-parser';
+
 import { AppModule } from './app.module';
 
 const socketPath = process.env.LISTEN_TO;
@@ -13,6 +15,8 @@ if (socketPath === undefined) {
 
 async function bootstrap(socketPath: string): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  app.use(cookieParser());
 
   app.enableCors({
     origin: '*',

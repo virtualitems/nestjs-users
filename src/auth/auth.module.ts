@@ -18,12 +18,13 @@ import { User } from './entities/user.entity';
 import { PermissionsService } from './providers/permissions.service';
 import { RolesService } from './providers/roles.service';
 import { UsersService } from './providers/users.service';
+import { miliseconds } from 'src/shared/numerics';
 
 @Module({
   imports: [
     JwtModule.register({
       secret: env.JWT_SECRET,
-      signOptions: { expiresIn: env.JWT_EXPIRES_IN },
+      signOptions: { expiresIn: miliseconds(env.JWT_EXPIRATION_TIME) },
     }),
     MikroOrmModule.forFeature({
       entities: [

@@ -13,12 +13,13 @@ import { HashingService } from '../shared/providers/hashing.service';
 import { AuthPersonsController } from './controllers/auth-persons.controller';
 import { PersonUser } from './entities/persons-users.entity';
 import { AuthPersonsService } from './providers/auth-persons.service';
+import { miliseconds } from 'src/shared/numerics';
 
 @Module({
   imports: [
     JwtModule.register({
       secret: env.JWT_SECRET,
-      signOptions: { expiresIn: env.JWT_EXPIRES_IN },
+      signOptions: { expiresIn: miliseconds(env.JWT_EXPIRATION_TIME) },
     }),
     AuthModule,
     PersonsModule,

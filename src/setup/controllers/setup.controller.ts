@@ -45,6 +45,7 @@ export class SetupController {
         .update(body.userEmail + time)
         .digest('hex'),
       password: this.hashingService.encrypt(body.userPassword),
+      jwtVersion: time,
       createdAt: new Date(),
     };
 

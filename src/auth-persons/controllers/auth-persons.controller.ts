@@ -86,6 +86,7 @@ export class AuthPersonsController {
         .createHash('md5')
         .update(body.email + now.getTime())
         .digest('hex'),
+      jwtVersion: Date.now(),
     };
 
     await this.em.transactional(async (em: EntityManager) => {

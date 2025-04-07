@@ -24,6 +24,9 @@ export class User {
   @Property({ fieldName: 'password' })
   password: string;
 
+  @Property({ fieldName: 'jwt_version', type: 'bigint' })
+  jwtVersion: number;
+
   @Property({ fieldName: 'is_confirmed', default: false })
   isConfirmed?: boolean = false;
 
@@ -31,7 +34,7 @@ export class User {
   lastLogin?: Date | null;
 
   @Property({ fieldName: 'created_at', nullable: true })
-  createdAt?: Date | null = new Date();
+  createdAt?: Date | null;
 
   @Property({ fieldName: 'deleted_at', nullable: true, index: true })
   deletedAt?: Date | null;
