@@ -316,13 +316,9 @@ export class UsersController {
 
     collection.set(permissions);
 
-    await this.em.persistAndFlush(user);
+    user.jwtVersion = Date.now();
 
-    await this.usersService.update(
-      this.em,
-      { jwtVersion: Date.now() },
-      { id: user.id },
-    );
+    await this.em.persistAndFlush(user);
   }
 
   @Get(':id/roles')
