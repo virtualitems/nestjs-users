@@ -1,5 +1,3 @@
-import { ClientRequest, ServerResponse } from 'node:http';
-
 import {
   CallHandler,
   ExecutionContext,
@@ -9,8 +7,11 @@ import {
 import { JwtService } from '@nestjs/jwt';
 
 import { JwtPayload } from '../interfaces/jwt.interface';
+import { Request, Response } from 'express';
+import { env } from '../env';
+import { miliseconds } from '../numerics';
 
-type RequestWithContext = ClientRequest & {
+type RequestWithUser = Request & {
   user?: JwtPayload;
 };
 
@@ -18,22 +19,36 @@ type RequestWithContext = ClientRequest & {
 export class RefreshTokenInterceptor implements NestInterceptor {
   constructor(protected readonly jwtService: JwtService) {}
 
+  getRequest(context: ExecutionContext): RequestWithUser {
+    return context.switchToHttp().getRequest<RequestWithUser>();
+  }
+
+  getResponse(context: ExecutionContext): Response {
+    return context.switchToHttp().getResponse<Response>();
+  }
+
   intercept(context: ExecutionContext, next: CallHandler) {
-    const request = context.switchToHttp().getRequest<RequestWithContext>();
-    const response = context.switchToHttp().getResponse<ServerResponse>();
+    const request = this.getRequest(context);
+    const response = this.getResponse(context);
 
     if (request.user === undefined) {
       return next.handle();
     }
 
-    const payload = { ...request.user };
+    const { iat: _iat, exp: _exp, ...data } = request.user;
 
-    delete payload.iat;
-    delete payload.exp;
+    if (data.rex === undefined || data.rex < Date.now()) {
+      return next.handle();
+    }
 
-    const token = this.jwtService.sign(payload);
+    const token = this.jwtService.sign(data);
 
-    response.setHeader('Authorization', `Bearer ${token}`);
+    response.cookie(env.JWT_COOKIE_NAME, token, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: miliseconds(env.JWT_COOKIE_MAX_AGE),
+    });
 
     return next.handle();
   }
