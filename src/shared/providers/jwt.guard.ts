@@ -12,14 +12,10 @@ import { env } from '../env';
 
 type RequestWithUser = Request & { user?: JwtPayload };
 
-export const PERMISSIONS_META_KEY = 'meta_user_permissions';
-
-export function Permissions(...permissions: string[]) {
-  return SetMetadata(PERMISSIONS_META_KEY, permissions);
-}
-
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
+  public static readonly PERMISSIONS_META_KEY = 'meta_user_permissions';
+
   constructor(
     protected readonly em: EntityManager,
     protected readonly reflector: Reflector,
@@ -40,7 +36,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
   getRequiredPermissions(context: ExecutionContext): string[] {
     return this.reflector.get<string[]>(
-      PERMISSIONS_META_KEY,
+      JwtAuthGuard.PERMISSIONS_META_KEY,
       context.getHandler(),
     );
   }
@@ -87,4 +83,8 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
 
     return true;
   }
+}
+
+export function Permissions(...permissions: string[]) {
+  return SetMetadata(JwtAuthGuard.PERMISSIONS_META_KEY, permissions);
 }
