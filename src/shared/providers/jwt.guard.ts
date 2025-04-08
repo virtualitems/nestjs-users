@@ -6,8 +6,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { PermissionsService } from '../../auth/providers/permissions.service';
 import { UsersService } from '../../auth/providers/users.service';
 import { JwtPayload } from '../interfaces/jwt.interface';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { env } from '../env';
 
 type RequestWithUser = Request & { user?: JwtPayload };
 
@@ -33,12 +34,18 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return context.switchToHttp().getRequest();
   }
 
+  getResponse(context: ExecutionContext): Response {
+    return context.switchToHttp().getResponse();
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = this.getRequest(context);
+    const response = this.getResponse(context);
+
     if (!(await super.canActivate(context))) {
+      response.clearCookie(env.JWT_COOKIE_NAME);
       return false;
     }
-
-    const request = this.getRequest(context);
 
     const payload = request.user as JwtPayload;
 
@@ -55,11 +62,13 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     );
 
     if (user === null) {
+      response.clearCookie(env.JWT_COOKIE_NAME);
       return false;
     }
 
     // check user jwt version
     if (user.jwtVersion !== payload.ver) {
+      response.clearCookie(env.JWT_COOKIE_NAME);
       return false;
     }
 
