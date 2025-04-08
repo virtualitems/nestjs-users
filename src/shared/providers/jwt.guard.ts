@@ -38,9 +38,17 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     return context.switchToHttp().getResponse();
   }
 
+  getRequiredPermissions(context: ExecutionContext): string[] {
+    return this.reflector.get<string[]>(
+      PERMISSIONS_META_KEY,
+      context.getHandler(),
+    );
+  }
+
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = this.getRequest(context);
     const response = this.getResponse(context);
+    const reqPerms = this.getRequiredPermissions(context);
 
     if (!(await super.canActivate(context))) {
       response.clearCookie(env.JWT_COOKIE_NAME);
@@ -69,6 +77,11 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
     // check user jwt version
     if (user.jwtVersion !== payload.ver) {
       response.clearCookie(env.JWT_COOKIE_NAME);
+      return false;
+    }
+
+    // check permissions
+    if (!reqPerms.every((perm) => payload.per!.includes(perm))) {
       return false;
     }
 

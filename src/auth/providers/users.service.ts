@@ -1,6 +1,7 @@
 import {
   EntityManager,
   FilterQuery,
+  Loaded,
   RequiredEntityData,
 } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
@@ -157,7 +158,7 @@ export class UsersService {
   public async permissions(
     em: EntityManager,
     user: User,
-  ): Promise<Permission[]> {
+  ): Promise<Loaded<Permission>[]> {
     const perms = await em.find(Permission, {
       $or: [{ users: { id: user.id } }, { roles: { users: { id: user.id } } }],
     });

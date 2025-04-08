@@ -232,10 +232,13 @@ export class UsersController {
       { id: user.id },
     );
 
+    const perms = await this.usersService.permissions(this.em, user);
+
     const payload = {
       sub: user.id,
       ver: user.jwtVersion,
       rex: Date.now() + miliseconds(env.JWT_REFRESH_EXPIRATION_TIME),
+      per: perms.map((p) => p.slug),
     };
 
     const token = this.jwtService.sign(payload);

@@ -8,4 +8,5 @@ export interface JwtPayload {
   jti?: number; // unique identifier; can be used to prevent the jwt from being replayed (allows a token to be used only once)
   rex?: number; // time after which the jwt can not be refreshed
   ver?: number; // user version of the jwt
+  per?: string[]; // permissions of the user
 }
