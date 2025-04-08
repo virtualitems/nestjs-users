@@ -2,14 +2,15 @@ import * as bcryptjs from 'bcryptjs';
 
 import { Injectable } from '@nestjs/common';
 
-import { ConfigService } from '@nestjs/config';
+import { env } from '../env';
 
 @Injectable()
 export class HashingService {
-  constructor(protected readonly configService: ConfigService) {}
+  constructor() {}
 
-  public encrypt(text: string): string {
-    const salt = bcryptjs.genSaltSync(10);
+  public password(text: string): string {
+    const rounds = Number(env.PASSWORD_HASH_SALT_ROUNDS);
+    const salt = bcryptjs.genSaltSync(rounds);
     return bcryptjs.hashSync(text, salt);
   }
 

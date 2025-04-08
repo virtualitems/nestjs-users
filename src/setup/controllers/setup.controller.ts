@@ -44,7 +44,7 @@ export class SetupController {
         .createHash('md5')
         .update(body.userEmail + time)
         .digest('hex'),
-      password: this.hashingService.encrypt(body.userPassword),
+      password: this.hashingService.password(body.userPassword),
       jwtVersion: time,
       createdAt: new Date(),
     };

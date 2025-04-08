@@ -33,7 +33,7 @@ export class AuthPersonsController {
     protected readonly usersService: UsersService,
     protected readonly personsService: PersonsService,
     protected readonly authPersonsService: AuthPersonsService,
-    protected readonly hashService: HashingService,
+    protected readonly hashingService: HashingService,
     protected readonly em: EntityManager,
   ) {}
 
@@ -76,7 +76,7 @@ export class AuthPersonsController {
       createdAt: now,
     };
 
-    const password = this.hashService.encrypt(body.password);
+    const password = this.hashingService.password(body.password);
 
     const userData = {
       email: body.email,

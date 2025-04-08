@@ -131,7 +131,7 @@ export class UsersController {
         .createHash('md5')
         .update(body.email + time)
         .digest('hex'),
-      password: this.hashingService.encrypt(body.password),
+      password: this.hashingService.password(body.password),
       jwtVersion: time,
       createdAt: new Date(),
     };
@@ -170,7 +170,7 @@ export class UsersController {
     const data = { ...body, updatedAt: new Date() };
 
     if (body.password !== undefined) {
-      data.password = this.hashingService.encrypt(body.password);
+      data.password = this.hashingService.password(body.password);
     }
 
     await this.usersService.update(this.em, body, { id });
@@ -471,7 +471,7 @@ export class UsersController {
       throw new UnauthorizedException();
     }
 
-    user.password = this.hashingService.encrypt(body.password);
+    user.password = this.hashingService.password(body.password);
 
     await this.em.persistAndFlush(user);
   }
