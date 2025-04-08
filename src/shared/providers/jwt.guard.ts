@@ -35,10 +35,12 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
   }
 
   getRequiredPermissions(context: ExecutionContext): string[] {
-    return this.reflector.get<string[]>(
+    const perms = this.reflector.get<string[]>(
       JwtAuthGuard.PERMISSIONS_META_KEY,
       context.getHandler(),
     );
+
+    return perms ?? [];
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
