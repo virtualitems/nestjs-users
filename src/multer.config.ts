@@ -1,14 +1,14 @@
-import { Request } from 'express';
 import { diskStorage } from 'multer';
+import { env } from './shared/env';
+import { resolve } from 'node:path';
 
-function filename(
-  req: Request,
-  file: Express.Multer.File,
-  callback: (error: Error | null, filename: string) => void,
-) {
+export function filename(file: Express.Multer.File) {
   const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-  const filename = uniqueSuffix + '-' + file.originalname;
-  callback(null, filename);
+  return uniqueSuffix + '-' + file.originalname;
+}
+
+export function destination(file: Express.Multer.File) {
+  return resolve(env.MEDIA_STORAGE_PATH, filename(file));
 }
 
 export function multerDiskStorage(
@@ -18,7 +18,9 @@ export function multerDiskStorage(
   return {
     storage: diskStorage({
       destination: diskStorageDestination,
-      filename: filename,
+      filename: (req, file, cb) => {
+        cb(null, filename(file));
+      },
     }),
     limits: {
       fileSize: maxFileSize ?? 1024 * 1024 * 5, // 5MB
